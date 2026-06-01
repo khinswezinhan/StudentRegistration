@@ -92,7 +92,7 @@
                         <i class="fa-solid fa-circle-check stat-icon-style"></i>
                         <div class="stat-info-area">
                             <p class="stat-label text-muted fw-normal">Course</p>
-                            <h3 class="stat-number fw-bold">576</h3>
+                            <h3 class="stat-number fw-bold">{{ $courses->count() }}</h3>
                         </div>
                     </div>
                 </div>

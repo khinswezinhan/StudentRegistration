@@ -42,7 +42,7 @@
                 <div class="mb-4">
                     <b><label class="form-label form-theme-label">Select Teacher</label></b>
                     <select class="form-select form-control" name="teacher_id" required>
-                        <option value="" selected disabled>-- Choose Teacher --</option>
+                        <option value="" selected disabled>Choose Teacher</option>
                         @foreach($teachers as $teacher)
                             <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                         @endforeach

@@ -3,19 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreTeacherRequest;
 use App\Models\Teacher;
+use Illuminate\Http\RedirectResponse;
 
 class TeacherController extends Controller
 {
-    public function Teacher(Request $request){
-    $incomingFields = $request->validate ([
-      'name' => 'required',
-      'rank' => 'required',
-      'email' => 'required|email|unique:teachers',
-      'phone' => 'required',
-      'address' => 'required',
-    ]);
+    public function Teacher(StoreTeacherRequest $request) : RedirectResponse {
+    $incomingFields = $request->validated ();
 
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['rank'] = strip_tags($incomingFields['rank']);
@@ -51,16 +46,10 @@ public function showEdit($id) {
 }
 
 
-public function update($id, Request $request) {
+public function update($id, StoreTeacherRequest $request) : RedirectResponse{
     $teacher = Teacher::find($id);
 
-    $incomingFields = $request->validate([
-      'name' => 'required',
-      'rank' => 'required',
-      'email' => 'required|email|unique:students,email',
-      'phone' => 'required',
-      'address' => 'required',
-    ]);
+    $incomingFields = $request->validated();
 
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['rank'] = strip_tags($incomingFields['rank']);

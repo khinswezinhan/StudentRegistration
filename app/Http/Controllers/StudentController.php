@@ -3,21 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreStudentRequest;
 use App\Models\Student;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+
 
 
 class StudentController extends Controller
 {
 
-         public function Student(Request $request){
-    $incomingFields = $request->validate ([
-      'name' => 'required',
-      'class' => 'required',
-      'email' => 'required',
-      'phone' => 'required',
-      'address' => 'required',
-    ]);
+         public function Student(StoreStudentRequest $request) : RedirectResponse {
+    $incomingFields = $request->validated ();
 
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['class'] = strip_tags($incomingFields['class']);
@@ -50,16 +46,10 @@ public function showEditScreen($id) {
 }
 
 
-public function update($id, Request $request) {
+public function update($id, StoreStudentRequest $request) : RedirectResponse {
     $student = Student::find($id);
 
-    $incomingFields = $request->validate([
-        'name' => 'required',
-      'class' => 'required',
-      'email' => 'required',
-      'phone' => 'required',
-      'address' => 'required',
-    ]);
+    $incomingFields = $request->validated();
 
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['class'] = strip_tags($incomingFields['class']);
