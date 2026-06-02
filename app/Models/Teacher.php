@@ -13,7 +13,7 @@ class Teacher extends Model
 
     protected $table = 'teachers';
 
-    protected $fillable = ['name','rank','email','phone','address'];
+    protected $fillable = ['image','name','rank','email','phone','address'];
 
     public function course(): HasMany
     {

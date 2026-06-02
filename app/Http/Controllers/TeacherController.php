@@ -11,13 +11,25 @@ class TeacherController extends Controller
 {
     public function Teacher(StoreTeacherRequest $request) : RedirectResponse {
     $incomingFields = $request->validated ();
-
+    $incomingFields['image'] = strip_tags($incomingFields['image']);
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['rank'] = strip_tags($incomingFields['rank']);
     $incomingFields['email'] = strip_tags($incomingFields['email']);
     $incomingFields['phone'] = strip_tags($incomingFields['phone']);
     $incomingFields['address'] = strip_tags($incomingFields['address']);
-     
+
+     if ($request->hasFile('image')) {
+
+    $file = $request->file('image');
+
+    $filename = time() . '_' . $file->getClientOriginalName();
+
+    $file->move(public_path('image'), $filename);
+
+    $incomingFields['image'] = $filename;
+}
+
+
 
     Teacher::create($incomingFields);
     return redirect('/teacher/index');
@@ -50,6 +62,7 @@ public function update($id, StoreTeacherRequest $request) : RedirectResponse{
     $teacher = Teacher::find($id);
 
     $incomingFields = $request->validated();
+    $incomingFields['image'] = strip_tags($incomingFields['image']);
 
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['rank'] = strip_tags($incomingFields['rank']);
@@ -58,6 +71,18 @@ public function update($id, StoreTeacherRequest $request) : RedirectResponse{
     $incomingFields['address'] = strip_tags($incomingFields['address']);
 
     
+    if ($request->hasFile('image')) {
+
+            $file = $request->file('image');
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path('image'), $filename);
+
+            $incomingFields['image'] = $filename;
+        }
+
+
     $teacher->update($incomingFields);
 
     

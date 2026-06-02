@@ -28,7 +28,7 @@
     </style>
 
     <div class="py-4"> 
-        <form action="{{ route('course.store') }}" method="POST">
+        <form action="{{ route('course.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="p-5 rounded-4 w-50 m-auto form-border-custom bg-white"> 
@@ -47,6 +47,11 @@
                             <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
                         @endforeach
                     </select>
+                </div>
+
+                <div class="mb-3">
+                    <b><label class="form-label form-theme-label">Upload file</label></b>
+                    <input class="form-control" type="file" name="file" required>
                 </div>
 
                 <div class="mb-2">

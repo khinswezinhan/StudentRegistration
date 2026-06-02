@@ -1,10 +1,10 @@
-<x-app-layout>
+{{-- <x-app-layout>
     <style>
         .custom-theme-color {
             color: rgb(93, 79, 112) !important;
         }
 
-        /* Table Wrapper Box Style */
+        /* Table တစ်ခုလုံးကို ပတ်ပြီး ထောင့်ကွေးပေးမယ့် Wrapper */
         .table-responsive-custom {
             border: 1px solid rgb(93, 79, 112) !important;
             border-radius: 10px !important;
@@ -17,16 +17,16 @@
             border: none !important;
         }
 
-        /* Table Header Style */
+        /* Table Header (ခေါင်းစဉ်တန်း) ခရမ်းရောင်နောက်ခံနှင့် စာသား */
         .table-custom-theme thead th {
             color: rgb(93, 79, 112) !important;
             background-color: rgba(93, 79, 112, 0.05) !important;
             border-bottom: 2px solid rgb(93, 79, 112) !important;
             font-weight: 600;
-            padding: 15px 18px !important;
+            padding: 15px 18px !important; /* စာသားနှင့် ဘောင်ကြား ခွာရန် Padding */
         }
 
-        /* Table Body Style */
+        /* Table Body (အထဲကစာသားများ) ကို ခရမ်းရောင်ပြောင်းပြီး Padding တိုးထားပါတယ် */
         .table-custom-theme tbody td, 
         .table-custom-theme tbody th {
             color: rgb(93, 79, 112) !important;
@@ -35,23 +35,22 @@
             border-color: rgba(93, 79, 112, 0.15) !important;
         }
 
-        /* Create Button - မူလကတည်းက ခရမ်းရောင်အပြည့် ဖြစ်အောင် ပြင်ဆင်ထားပါတယ် */
+        /* Create Button - မူလကတည်းက ခရမ်းရောင်အပြည့် */
         .btn-custom-solid {
-            color: #ffffff !important; /* စာသားနှင့် အိုင်ကွန်ကို အဖြူရောင် ပေးထားပါတယ် */
-            background-color: rgb(93, 79, 112) !important; /* မူလနောက်ခံကို ခရမ်းရောင် ထားပါတယ် */
+            color: #ffffff !important;
+            background-color: rgb(93, 79, 112) !important;
             border: 1px solid rgb(93, 79, 112) !important;
             transition: all 0.2s ease;
         }
-        
-        /* Hover ဖြစ်သွားတဲ့အခါ ခရမ်းရောင် အနည်းငယ် ရင့်သွားစေပြီး ပိုပြီး ပေါ်လွင်စေပါတယ် */
         .btn-custom-solid:hover {
-            background-color: rgb(75, 63, 91) !important; 
+            background-color: rgb(75, 63, 91) !important;
             border-color: rgb(75, 63, 91) !important;
             box-shadow: 0 4px 8px rgba(93, 79, 112, 0.2);
         }
     </style>
 
-    <div class="mt-2 mb-4"> <a href="/user-create-form" class="text-decoration-none">
+    <div class="mt-2 mb-4">
+        <a href="/user-create" class="text-decoration-none">
             <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
                 <i class="fa-solid fa-plus me-1"></i> Create New Content
             </button>
@@ -63,9 +62,9 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Image</th>
+                    <th scope="col">image</th>
                     <th scope="col">Name</th>
-                    <th scope="col">Class</th>
+                    <th scope="col">Rank</th>
                     <th scope="col">Email</th>
                     <th scope="col">Phone</th>
                     <th scope="col">Address</th>
@@ -73,34 +72,34 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($students as $student)
+                @foreach($teachers as $teacher)
                     <tr>
-                        <th scope="row">{{ $student->id }}</th>
+                        <th scope="row">{{ $teacher->id }}</th>
                         <td>
-                           @if($student->image)
+                           @if($teacher->image)
                                
-                        <img src="/image/{{ $student->image }}"
+                        <img src="/image/{{ $teacher->image }}"
                             width="80">
                       @else
                                 <span class="text-muted" style="font-size: 13px;">No Image</span>
                             @endif
                         </td>
-                        <td>{{ $student->name }}</td>
-                        <td>{{ $student->class }}</td>
-                        <td>{{ $student->email }}</td>
-                        <td>{{ $student->phone }}</td>
-                        <td>{{ $student->address }}</td>
+                        <td>{{ $teacher->name }}</td>
+                        <td>{{ $teacher->rank }}</td>
+                        <td>{{ $teacher->email }}</td>
+                        <td>{{ $teacher->phone }}</td>
+                        <td>{{ $teacher->address }}</td>
                         
                         <td>
-                            <form method="post" action="{{ route('student.destroy', $student) }}" class="d-flex gap-2">
+                            <form method="post" action="{{ route('teacher.destroy', $teacher) }}" class="d-flex gap-2">
                                 @csrf
                                 @method('DELETE')
                                 
-                                <a href="{{ route('student.edit', $student->id) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('teacher.edit', $teacher->id) }}" class="btn btn-sm btn-primary">
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </a>
                                 
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete?')">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this teacher?')">
                                     <i class="fa-solid fa-trash"></i> Delete
                                 </button> 
                             </form>
@@ -110,4 +109,4 @@
             </tbody>
         </table>
     </div>
-</x-app-layout>
+</x-app-layout> --}}

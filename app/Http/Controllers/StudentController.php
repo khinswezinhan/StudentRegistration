@@ -14,13 +14,25 @@ class StudentController extends Controller
 
          public function Student(StoreStudentRequest $request) : RedirectResponse {
     $incomingFields = $request->validated ();
-
+    $incomingFields['image'] = strip_tags($incomingFields['image']);
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['class'] = strip_tags($incomingFields['class']);
     $incomingFields['email'] = strip_tags($incomingFields['email']);
     $incomingFields['phone'] = strip_tags($incomingFields['phone']);
     $incomingFields['address'] = strip_tags($incomingFields['address']);
      
+
+    if ($request->hasFile('image')) {
+
+            $file = $request->file('image');
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path('image'), $filename);
+
+            $incomingFields['image'] = $filename;
+        }
+
 
     Student::create($incomingFields);
     return redirect('/student/index');
@@ -50,6 +62,7 @@ public function update($id, StoreStudentRequest $request) : RedirectResponse {
     $student = Student::find($id);
 
     $incomingFields = $request->validated();
+    $incomingFields['image'] = strip_tags($incomingFields['image']);
 
     $incomingFields['name'] = strip_tags($incomingFields['name']);
     $incomingFields['class'] = strip_tags($incomingFields['class']);
@@ -58,6 +71,18 @@ public function update($id, StoreStudentRequest $request) : RedirectResponse {
     $incomingFields['address'] = strip_tags($incomingFields['address']);
 
     
+    if ($request->hasFile('image')) {
+
+            $file = $request->file('image');
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path('image'), $filename);
+
+            $incomingFields['image'] = $filename;
+        }
+
+
     $student->update($incomingFields);
 
     

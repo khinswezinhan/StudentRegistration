@@ -25,6 +25,7 @@ class StoreCourseRequest extends FormRequest
         return [
             'course_name' => 'required',
             'teacher_id' => 'required|exists:teachers,id', 
+            'file' => 'required|file|mimes:png,jpg,jpeg,pdf|max:5120',
         ];
     }
 }

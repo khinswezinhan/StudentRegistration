@@ -20,6 +20,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 
+
+
 Route::get('/teacher/index', [TeacherController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('teacher');
 

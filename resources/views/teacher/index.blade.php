@@ -62,6 +62,7 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
+                    <th scope="col">image</th>
                     <th scope="col">Name</th>
                     <th scope="col">Rank</th>
                     <th scope="col">Email</th>
@@ -74,6 +75,15 @@
                 @foreach($teachers as $teacher)
                     <tr>
                         <th scope="row">{{ $teacher->id }}</th>
+                        <td>
+                           @if($teacher->image)
+                               
+                        <img src="/image/{{ $teacher->image }}"
+                            width="80">
+                      @else
+                                <span class="text-muted" style="font-size: 13px;">No Image</span>
+                            @endif
+                        </td>
                         <td>{{ $teacher->name }}</td>
                         <td>{{ $teacher->rank }}</td>
                         <td>{{ $teacher->email }}</td>

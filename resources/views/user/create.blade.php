@@ -1,12 +1,10 @@
-<x-app-layout>
+{{-- <x-app-layout>
     <style>
-        /* Form Box တစ်ခုလုံးအတွက် Custom Border နှင့် Shadow */
         .form-border-custom {
             border: 1px solid rgb(93, 79, 112) !important;
             box-shadow: 0 4px 12px rgba(93, 79, 112, 0.05);
         }
 
-        /* ခေါင်းစဉ်နှင့် Label များအတွက် ခရမ်းရောင် */
         .form-theme-title {
             color: rgb(93, 79, 112) !important;
             font-weight: 600;
@@ -15,13 +13,11 @@
             color: rgb(93, 79, 112) !important;
         }
 
-        /* Input များကို နှိပ်လိုက်သည့်အခါ ထွက်ပေါ်လာမည့် Glow Effect */
         .form-control:focus {
             border-color: rgb(93, 79, 112) !important;
             box-shadow: 0 0 0 0.25rem rgba(93, 79, 112, 0.25) !important;
         }
 
-        /* Create Button - မူလထဲက ခရမ်းရောင်အပြည့် */
         .btn-custom-solid {
             color: #ffffff !important;
             background-color: rgb(93, 79, 112) !important;
@@ -84,4 +80,4 @@
             </div>
         </form>
     </div>
-</x-app-layout>
+</x-app-layout> --}}

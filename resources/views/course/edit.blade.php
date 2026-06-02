@@ -2,7 +2,7 @@
     <div class="container mt-5" style="max-width: 500px;">
         <h2 class="text-center text-primary mb-4">Editing Content</h2>
         
-        <form action="{{ route('course.update', $course->id) }}" method="POST">
+        <form action="{{ route('course.update', $course->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') 
             
@@ -20,6 +20,22 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Current File</label>
+                <div class="mb-2">
+                    @if($course->file)
+                        <a href="{{ asset('file/' . $course->file) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                            <i class="fa-solid fa-file"></i> View Current File
+                        </a>
+                    @else
+                        <span class="text-muted" style="font-size: 13px;">No file uploaded</span>
+                    @endif
+                </div>
+
+                <label class="form-label">Upload New File</label>
+                <input type="file" name="file" class="form-control">
             </div>
 
             <button type="submit" class="btn btn-primary">Save Changes</button>

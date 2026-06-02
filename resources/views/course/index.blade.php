@@ -65,6 +65,7 @@
                     <th scope="col">ID</th>
                     <th scope="col">Course Name</th>
                     <th scope="col">Teachers' Name</th>
+                    <th scope="col">File</th>
                     <th scope="col" style="width: 160px;">Action</th>
                 </tr>
             </thead>
@@ -74,6 +75,18 @@
                         <th scope="row">{{ $course->id }}</th>
                         <td>{{ $course->course_name }}</td>
                         <td>{{ $course->teacher ? $course->teacher->name : 'No Teacher' }}</td>
+                        <td>
+                            @if($course->file)
+                                <a href="{{ asset('file/' . $course->file) }}" 
+                                target="_blank" 
+                                class="btn btn-sm btn-outline-secondary"
+                                style="padding: 4px 8px; font-size: 13px;">
+                                    <i class="fa-solid fa-file-arrow-down me-1"></i> View / Download File
+                                </a>
+                            @else
+                                <span class="text-muted" style="font-size: 13px;">No File</span>
+                            @endif
+                        </td>
                         
                         
                         <td>

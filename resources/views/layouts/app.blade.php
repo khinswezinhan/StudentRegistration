@@ -78,6 +78,10 @@
                         <div><i class="fa-solid fa-circle-check me-2"></i> Course</div>
                     </a>
 
+                    <a href="{{ route('course') }}" class="nav-link-custom {{ request()->routeIs('course') ? 'active' : '' }}">
+                        <div><i class="fa-solid fa-circle-check me-2"></i> User List</div>
+                    </a>
+
                 </div>
             </div>
 

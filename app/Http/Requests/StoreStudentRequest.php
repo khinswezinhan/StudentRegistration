@@ -23,6 +23,7 @@ class StoreStudentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'image' => 'required|file|mimes:png,jpg,jpeg,pdf|max:5120',
             'name' => 'required',
             'class' => 'required',
             'email' => 'required',

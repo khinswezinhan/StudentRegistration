@@ -28,6 +28,7 @@ class StoreTeacherRequest extends FormRequest
         'email' => 'required|email|unique:students,email',
         'phone' => 'required',
         'address' => 'required',
+        'image' => 'nullable|file|mimes:png,jpg,jpeg,pdf|max:5120',
         ];
     }
 }
