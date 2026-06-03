@@ -1,4 +1,4 @@
-{{-- <x-app-layout>
+<x-app-layout>
     <style>
         .custom-theme-color {
             color: rgb(93, 79, 112) !important;
@@ -50,56 +50,45 @@
     </style>
 
     <div class="mt-2 mb-4">
-        <a href="/user-create" class="text-decoration-none">
-            <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
-                <i class="fa-solid fa-plus me-1"></i> Create New Content
-            </button>
-        </a>
-    </div>
+    <a href="{{ route('manage_user.create') }}" class="text-decoration-none">
+        <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
+            <i class="fa-solid fa-plus me-1"></i> Create New User
+        </button>
+    </a>
+</div>
 
     <div class="table-responsive-custom">
         <table class="table table-striped-columns table-custom-theme">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">image</th>
                     <th scope="col">Name</th>
-                    <th scope="col">Rank</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Address</th>
+                    <th scope="col">Password</th>
+                    <th scope="col">Role</th>
                     <th scope="col" style="width: 160px;">Action</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($teachers as $teacher)
+                @foreach($users as $user)
                     <tr>
-                        <th scope="row">{{ $teacher->id }}</th>
-                        <td>
-                           @if($teacher->image)
-                               
-                        <img src="/image/{{ $teacher->image }}"
-                            width="80">
-                      @else
-                                <span class="text-muted" style="font-size: 13px;">No Image</span>
-                            @endif
-                        </td>
-                        <td>{{ $teacher->name }}</td>
-                        <td>{{ $teacher->rank }}</td>
-                        <td>{{ $teacher->email }}</td>
-                        <td>{{ $teacher->phone }}</td>
-                        <td>{{ $teacher->address }}</td>
+                        <th scope="row">{{ $user->id }}</th>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->password }}</td>
+                        <td>{{ $user->role ? $user->role->role_name : 'No Role' }}</td>
+                        
                         
                         <td>
-                            <form method="post" action="{{ route('teacher.destroy', $teacher) }}" class="d-flex gap-2">
+                            <form method="post" action="{{ route('user.destroy', $user) }}" class="d-flex gap-2">
                                 @csrf
                                 @method('DELETE')
                                 
-                                <a href="{{ route('teacher.edit', $teacher->id) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-primary">
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </a>
                                 
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this teacher?')">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
                                     <i class="fa-solid fa-trash"></i> Delete
                                 </button> 
                             </form>
@@ -109,4 +98,4 @@
             </tbody>
         </table>
     </div>
-</x-app-layout> --}}
+</x-app-layout>

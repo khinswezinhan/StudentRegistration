@@ -1,9 +1,9 @@
-{{-- <x-app-layout>
+<x-app-layout>
 
     <div class="container mt-5" style="max-width: 500px;">
         <h2 class="text-center text-primary mb-4">Editing Content</h2>
         
-        <form action="{{ route('teacher.update', $teacher->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('user.update', $user->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') 
 
@@ -11,39 +11,31 @@
 
             <div class="mb-3">
                 <label class="form-label">Name</label>
-                <input type="text" name="name" class="form-control" value="{{ $teacher->name }}">
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Rank</label>
-                <input type="text" name="rank" class="form-control" value="{{ $teacher->rank }}">
+                <input type="text" name="name" class="form-control" value="{{ $user->name }}">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="text" name="email" class="form-control" value="{{ $teacher->email }}">
+                <input type="text" name="email" class="form-control" value="{{ $user->email }}">
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Phone</label>
-                <input type="text" name="phone" class="form-control" value="{{ $teacher->phone }}">
+                <label class="form-label">Password</label>
+                <input type="text" name="password" class="form-control" value="{{ $user->password }}">
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Address</label>
-                <input type="text" name="address" class="form-control" value="{{ $teacher->address }}">
-            </div>
+          
 
             
-            <div class="mb-3">
-                <label class="form-label">Image</label>
-                @if ($teacher->image)
-                            <div class="mb-2">
-                                <img src="{{ asset('image/' . $teacher->image) }}" height="60"
-                                    class="rounded">
-                            </div>
-                        @endif
-                <input type="file" name="image" class="form-control" >
+            <div class="mb-4">
+                <label class="form-label">Role Name</label>
+                <select class="form-select form-control" name="role_id" required>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
+                            {{ $role->role_name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
 
@@ -51,4 +43,4 @@
             <a href="/" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
-</x-app-layout> --}}
+</x-app-layout>

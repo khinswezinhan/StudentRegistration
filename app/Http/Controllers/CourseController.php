@@ -15,7 +15,7 @@ class CourseController extends Controller
         $allContents = Course::with('teacher')->get(); 
         $data = ['courses' => $allContents];
         
-        return view('course.index', $data); // 👈 Dot (.) သုံးပြီး ပြင်ထားပါတယ်
+        return view('course.index', $data); 
     }
 
     

@@ -1,4 +1,4 @@
-{{-- <x-app-layout>
+<x-app-layout>
     <style>
         .form-border-custom {
             border: 1px solid rgb(93, 79, 112) !important;
@@ -33,23 +33,16 @@
     </style>
 
     <div class="py-4"> 
-        <form action="/teacher-create" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <div class="p-5 rounded-4 w-50 m-auto form-border-custom bg-white"> 
                 
-                <h2 class="text-center mb-4 form-theme-title fs-3">Create Teachers' Content</h2>
-                
-    
+                <h2 class="text-center mb-4 form-theme-title fs-3">Create users' Content</h2>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Name</label></b>
                     <input class="form-control" type="text" name="name" required>
-                </div>
-
-                <div class="mb-3">
-                    <b><label class="form-label form-theme-label">Rank</label></b>
-                    <input class="form-control" type="text" name="rank" required>
                 </div>
 
                 <div class="mb-3">
@@ -58,18 +51,18 @@
                 </div>
 
                 <div class="mb-3">
-                    <b><label class="form-label form-theme-label">Phone Number</label></b>
-                    <input class="form-control" type="text" name="phone">
+                    <b><label class="form-label form-theme-label">Password</label></b>
+                    <input class="form-control" type="password" name="password" required>
                 </div>
 
-                <div class="mb-4"> 
-                    <b><label class="form-label form-theme-label">Address</label></b>
-                    <input class="form-control" type="text" name="address">
-                </div>
-
-                 <div class="mb-3">
-                    <b><label class="form-label form-theme-label">Upload your photo</label></b>
-                    <input class="form-control" type="file" name="image" required>
+                <div class="mb-4">
+                    <b><label class="form-label form-theme-label">Select Role</label></b>
+                    <select class="form-select form-control" name="role_id" required>
+                        <option value="" selected disabled>Choose Role</option>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->id }}">{{ $role->role_name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="mb-2">
@@ -80,4 +73,4 @@
             </div>
         </form>
     </div>
-</x-app-layout> --}}
+</x-app-layout>

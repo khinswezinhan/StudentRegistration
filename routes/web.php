@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,8 +32,13 @@ Route::get('/student/index', [StudentController::class, 'index'])
 Route::get('/course/index', [CourseController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('course');
 
+Route::get('/user/index', [UserController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('user');
+
 
 //Route::get('/', [CreateContentController::class, 'index']);
+
+//student
 
 Route::get('/user-create-form', function () {
     return view('/student/create'); 
@@ -48,7 +54,7 @@ Route::get('/edit-content/{id}', [StudentController::class, 'showEditScreen'])->
 Route::put('/update-content/{id}', [StudentController::class, 'update'])->name('student.update');
 
 
-
+//teacher
 
 Route::get('/user-create', function () {
     return view('/teacher/create'); 
@@ -72,7 +78,7 @@ Route::get('/course', [CourseController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('course.index');
 
-
+//course
 Route::get('/course/create', [CourseController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('course.create');
@@ -93,7 +99,17 @@ Route::delete('/course/{course}', [CourseController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('course.destroy');
 
+//user
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    Route::get('/user/create', [UserController::class, 'create'])->name('manage_user.create');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
+});
 
 
 Route::middleware('auth')->group(function () {
