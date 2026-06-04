@@ -39,7 +39,7 @@
             
             <div class="p-5 rounded-4 w-50 m-auto form-border-custom bg-white"> 
                 
-                <h2 class="text-center mb-4 form-theme-title fs-3">Create Student Content</h2>
+                <h2 class="text-center mb-4 form-theme-title fs-3">Create Students' Content</h2>
                 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Name</label></b>

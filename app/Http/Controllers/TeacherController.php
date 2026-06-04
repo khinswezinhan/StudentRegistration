@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
@@ -36,13 +37,24 @@ class TeacherController extends Controller
      }
 
 
-     public function index() 
-       {
-          $allContents = Teacher::all(); 
-          $data = ['teachers' => $allContents];
-          return view('/teacher/index', $data);
-       }
+    public function index(Request $request) 
+{
+    $query = Teacher::query();
 
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
+    }
+
+    if ($request->filled('rank')) {
+        $query->where('rank', 'like', '%' . $request->rank . '%');
+    }
+
+    $allContents = $query->paginate(5)->appends($request->all());
+    
+    $data = ['teachers' => $allContents];
+    
+    return view('teacher.index', $data);
+}
       
 
      public function destroy(Teacher $teacher) 

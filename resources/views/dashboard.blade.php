@@ -18,32 +18,31 @@
         .stat-card-inner {
             display: flex !important;
             align-items: center !important;
-            padding: 1.2rem 1rem !important; /* Padding ကို နည်းနည်းကျစ်လျစ်အောင် လျှော့ထားပါတယ် */
+            padding: 1.2rem 1rem !important; 
         }
         
         .stat-icon-style {
-            font-size: 2rem !important; /* Icon size ကို 2.5 ကနေ 2 ကို လျှော့ပါတယ် */
+            font-size: 2rem !important;
             color: rgb(93, 79, 112) !important;
             opacity: 0.9;
             margin-right: 12px;
-            flex-shrink: 0; /* Icon ပုံစံ ပျက်မသွားအောင် ထိန်းထားတာပါ */
+            flex-shrink: 0; 
         }
 
         .stat-info-area {
             flex-grow: 1;
-            min-width: 0; /* စာသားတွေ overflow ဖြစ်တာ ကာကွယ်ဖို့ */
+            min-width: 0; 
         }
 
         .stat-label {
-            font-size: 0.85rem; /* စာသား size လျှော့ထားပါတယ် */
+            font-size: 0.85rem; 
             margin-bottom: 2px;
-            white-space: nowrap; /* စာလုံးကို အောက်ကြောင်းမဆင်းဘဲ တစ်တန်းတည်းရှိနေစေဖို့ */
+            white-space: nowrap; 
             overflow: hidden;
-            text-overflow: ellipsis; /* တကယ်လို့ အရမ်းရှည်ရင် ... ပြပေးဖို့ */
-        }
+            text-overflow: ellipsis; 
 
         .stat-number {
-            font-size: 1.5rem !important; /* ဂဏန်း size ကို 1.75 ကနေ 1.5 ကို လျှော့ပါတယ် */
+            font-size: 1.5rem !important;
             margin-bottom: 0;
         }
     </style>

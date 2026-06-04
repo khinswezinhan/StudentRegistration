@@ -12,21 +12,29 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class UserController extends Controller
 {
-    // User အားလုံးကို List ပြတဲ့ Function
-    public function index(): View 
-    {
-        $users = User::with('role')->get(); 
-        return view('user.index', compact('users'));
+    public function index(Request $request): View 
+{
+    $query = User::with('role');
+
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
     }
 
-    // User အသစ်ဆောက်မယ့် Form စာမျက်နှာကို ပြတဲ့ Function
+    if ($request->filled('email')) {
+        $query->where('email', 'like', '%' . $request->email . '%');
+    }
+
+    $users = $query->paginate(5)->appends($request->all());
+    
+    return view('user.index', compact('users'));
+}
+
     public function create(): View
     {
-        $roles = Role::all(); // Dropdown မှာပြဖို့ Role ဒေတာတွေ ဆွဲထုတ်တယ်
+        $roles = Role::all(); 
         return view('user.create', compact('roles'));
     }
 
-    // Form ကလာတဲ့ ဒေတာတွေကို Database ထဲ သိမ်းတဲ့ Function
     public function store(StoreUserRequest $request): RedirectResponse 
     {
         $incomingFields = $request->validated();
@@ -34,7 +42,6 @@ class UserController extends Controller
         $incomingFields['name'] = strip_tags($incomingFields['name']);
         $incomingFields['email'] = strip_tags($incomingFields['email']);
         
-        // 🔐 အသစ်ဆောက်တာဖြစ်လို့ Password ကို မဖြစ်မနေ Hash လုပ်ပြီး သိမ်းပါတယ်
         $incomingFields['password'] = bcrypt(strip_tags($incomingFields['password']));
         $incomingFields['role_id'] = strip_tags($incomingFields['role_id']);
 
@@ -43,7 +50,6 @@ class UserController extends Controller
         return redirect()->route('user.index')->with('success', 'User created successfully');
     }
 
-    // User ပြင်ဆင်မယ့် စာမျက်နှာကို ပြတဲ့ Function
     public function edit($id): View
     {
         $user = User::find($id);
@@ -51,7 +57,6 @@ class UserController extends Controller
         return view('user.edit', compact('user', 'roles'));
     }
 
-    // ပြင်ဆင်လိုက်တဲ့ ဒေတာတွေကို Database ထဲမှာ Update လုပ်တဲ့ Function
     public function update($id, StoreUserRequest $request): RedirectResponse 
     {
         $user = User::find($id);
@@ -61,11 +66,10 @@ class UserController extends Controller
         $incomingFields['email'] = strip_tags($incomingFields['email']);
         $incomingFields['role_id'] = strip_tags($incomingFields['role_id']);
 
-        // 🔐 Password Logic: ပတ်စဝေါ့အသစ် ရိုက်ထည့်မှသာ Hash လုပ်ပြီး သိမ်းမယ်
         if (!empty($incomingFields['password'])) {
             $incomingFields['password'] = bcrypt($incomingFields['password']);
         } else {
-            unset($incomingFields['password']); // ဘာမှမရိုက်ရင် အဟောင်းအတိုင်းထားဖို့ ဖယ်ထုတ်တယ်
+            unset($incomingFields['password']); 
         }
 
         $user->update($incomingFields);
@@ -73,7 +77,6 @@ class UserController extends Controller
         return redirect()->route('user.index')->with('success', 'User updated successfully');
     }
 
-    // User ကို ဖျက်တဲ့ Function
     public function destroy(User $user): RedirectResponse 
     {
         $user->delete();

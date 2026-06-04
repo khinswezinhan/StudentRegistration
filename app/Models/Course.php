@@ -10,6 +10,11 @@ class Course extends Model
     protected $table = 'courses';
     protected $fillable = ['course_name', 'teacher_id', 'file'];
 
+
+    protected $casts = [
+        'file' => 'array',
+    ];
+
     
     public function teacher(): BelongsTo
     {

@@ -29,7 +29,6 @@
                 background-color: rgba(0, 0, 0, 0.45);
             }
             
-            /* ခရမ်းရောင်အနု Solid Button (Get Started) */
             .btn-purple-md {
                 color: #1b1b18 !important;
                 background-color: rgb(225, 215, 240) !important;
@@ -51,7 +50,6 @@
                 box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
             }
 
-            /* ဖြူဝင်းရောင် Outline Button (Create Account) */
             .btn-purple-outline-md {
                 color: #ffffff !important;
                 border: 1px solid rgba(255, 255, 255, 0.8) !important;
@@ -73,7 +71,6 @@
                 border-color: #ffffff !important;
             }
 
-            /* ညာဘက်အပေါ်က Register ခလုတ် (ထောင့်ပိုဝိုင်းပြီး ပုံစံတူလုပ်ထားပါတယ်) */
             .btn-header-register {
                 color: #ffffff !important;
                 border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
@@ -81,8 +78,8 @@
                 font-size: 0.95rem !important;
                 font-weight: 600 !important;
                 padding: 0.6rem 1.4rem !important;
-                border-radius: 12px !important; /* နင့်ပုံထဲကလို ထောင့်လေး ပိုဝိုင်းသွားအောင် */
-                margin-left: 1.5rem !important; /* Log in စာသားနဲ့ အတင်း ခွာပစ်လိုက်တာ */
+                border-radius: 12px !important; 
+                margin-left: 1.5rem !important; 
                 transition: all 0.2s ease-in-out;
                 display: inline-flex;
                 align-items: center;
@@ -95,7 +92,6 @@
                 border-color: #ffffff !important;
             }
 
-            /* Welcome စာတန်းနဲ့ ခလုတ်ကြား အကွာအဝေး */
             h1.text-welcome {
                 margin-bottom: 4rem !important; 
             }

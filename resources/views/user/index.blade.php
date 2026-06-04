@@ -1,32 +1,33 @@
 <x-app-layout>
     <style>
-        .custom-theme-color {
+        .custom-theme-color, .form-theme-label {
             color: rgb(93, 79, 112) !important;
         }
 
-        /* Table တစ်ခုလုံးကို ပတ်ပြီး ထောင့်ကွေးပေးမယ့် Wrapper */
         .table-responsive-custom {
             border: 1px solid rgb(93, 79, 112) !important;
             border-radius: 10px !important;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(93, 79, 112, 0.05);
+            background-color: white;
         }
 
         .table-custom-theme {
             margin-bottom: 0 !important;
             border: none !important;
+            
+            table-layout: fixed;
+            width: 100%;
         }
 
-        /* Table Header (ခေါင်းစဉ်တန်း) ခရမ်းရောင်နောက်ခံနှင့် စာသား */
         .table-custom-theme thead th {
             color: rgb(93, 79, 112) !important;
             background-color: rgba(93, 79, 112, 0.05) !important;
             border-bottom: 2px solid rgb(93, 79, 112) !important;
             font-weight: 600;
-            padding: 15px 18px !important; /* စာသားနှင့် ဘောင်ကြား ခွာရန် Padding */
+            padding: 15px 18px !important;
         }
 
-        /* Table Body (အထဲကစာသားများ) ကို ခရမ်းရောင်ပြောင်းပြီး Padding တိုးထားပါတယ် */
         .table-custom-theme tbody td, 
         .table-custom-theme tbody th {
             color: rgb(93, 79, 112) !important;
@@ -35,67 +36,146 @@
             border-color: rgba(93, 79, 112, 0.15) !important;
         }
 
-        /* Create Button - မူလကတည်းက ခရမ်းရောင်အပြည့် */
         .btn-custom-solid {
             color: #ffffff !important;
             background-color: rgb(93, 79, 112) !important;
             border: 1px solid rgb(93, 79, 112) !important;
             transition: all 0.2s ease;
         }
+        
         .btn-custom-solid:hover {
             background-color: rgb(75, 63, 91) !important;
             border-color: rgb(75, 63, 91) !important;
             box-shadow: 0 4px 8px rgba(93, 79, 112, 0.2);
         }
+
+        .filter-box {
+            border: 1px solid rgb(93, 79, 112);
+            border-radius: 10px;
+            background-color: white;
+        }
     </style>
 
-    <div class="mt-2 mb-4">
-    <a href="{{ route('manage_user.create') }}" class="text-decoration-none">
-        <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
-            <i class="fa-solid fa-plus me-1"></i> Create New User
-        </button>
-    </a>
-</div>
+    <div class="py-4">
+        <div class="mt-2 mb-4">
+            <a href="{{ route('manage_user.create') }}" class="text-decoration-none">
+                <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
+                    <i class="fa-solid fa-plus me-1"></i> Create New User
+                </button>
+            </a>
+        </div>
 
-    <div class="table-responsive-custom">
-        <table class="table table-striped-columns table-custom-theme">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Password</th>
-                    <th scope="col">Role</th>
-                    <th scope="col" style="width: 160px;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($users as $user)
-                    <tr>
-                        <th scope="row">{{ $user->id }}</th>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->password }}</td>
-                        <td>{{ $user->role ? $user->role->role_name : 'No Role' }}</td>
-                        
-                        
-                        <td>
-                            <form method="post" action="{{ route('user.destroy', $user) }}" class="d-flex gap-2">
-                                @csrf
-                                @method('DELETE')
+        @if($users->isEmpty() && (request('name') || request('email')))
+            
+            <div class="filter-box p-4 mb-4 shadow-sm">
+                <h5 class="custom-theme-color mb-3 fs-6 fw-bold">
+                    <i class="fa-solid fa-filter me-2"></i> အသုံးပြုသူများ ရှာဖွေရန်
+                </h5>
+                <form action="{{ url()->current() }}" method="GET" class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label form-theme-label small fw-bold">Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Search user name..." value="{{ request('name') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-theme-label small fw-bold">Email</label>
+                        <input type="text" name="email" class="form-control" placeholder="Search email..." value="{{ request('email') }}">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-custom-solid w-100 py-2">Filter</button>
+                        <a href="{{ url()->current() }}" class="btn btn-outline-secondary px-3 py-2">Clear</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="text-center my-4 p-5 bg-white rounded-4 shadow-sm" style="border: 1px solid rgba(220, 53, 69, 0.2);">
+                <div class="mb-3 text-danger" style="font-size: 3rem;">
+                    <i class="fa-solid fa-magnifying-glass-blur"></i>
+                </div>
+                <h4 class="text-danger mb-2">No matching results found</h4>
+                <p class="text-muted small mb-0">နင်ရှာဖွေလိုက်သော အမည် သို့မဟုတ် အီးမေးလ်နှင့် ကိုက်ညီသည့် User ဒေတာ မရှိပါဘူးဗျာ။</p>
+            </div>
+
+        @elseif($users->isEmpty())
+
+            <div class="text-center my-4 p-5 bg-white rounded-4 shadow-sm" style="border: 1px dashed rgb(93, 79, 112);">
+                <div class="mb-3 text-muted" style="font-size: 3rem;">
+                    <i class="fa-solid fa-users-slash text-secondary"></i>
+                </div>
+                <h4 class="custom-theme-color mb-2">Not yet create user list</h4>
+                <p class="text-muted small mb-0">အသုံးပြုသူစာရင်းများ လောလောဆယ် လုံးဝမရှိသေးပါသဖြင့် အပေါ်က "Create New User" မှတစ်ဆင့် စတင်ထည့်သွင်းနိုင်ပါသည်</p>
+            </div>
+
+        @else
+
+            <div class="filter-box p-4 mb-4 shadow-sm">
+                <h5 class="custom-theme-color mb-3 fs-6 fw-bold">
+                    <i class="fa-solid fa-filter me-2"></i> အသုံးပြုသူများ ရှာဖွေရန်
+                </h5>
+                <form action="{{ url()->current() }}" method="GET" class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label form-theme-label small fw-bold">Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Search user name..." value="{{ request('name') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label form-theme-label small fw-bold">Email</label>
+                        <input type="text" name="email" class="form-control" placeholder="Search email..." value="{{ request('email') }}">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-custom-solid w-100 py-2">Filter</button>
+                        <a href="{{ url()->current() }}" class="btn btn-outline-secondary px-3 py-2">Clear</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-responsive-custom">
+                <table class="table table-striped-columns table-custom-theme">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 70px;">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" style="width: 200px;">Password</th> {{-- Password ကို ၂၀၀ ပစ်ဇယ်ပဲ ပေးထားမယ် --}}
+                            <th scope="col" style="width: 130px;">Role</th>
+                            <th scope="col" style="width: 170px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($users as $user)
+                            <tr>
+                                <th scope="row">{{ $user->id }}</th>
+                                <td class="text-truncate">{{ $user->name }}</td>
+                                <td class="text-truncate">{{ $user->email }}</td>
                                 
-                                <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                </a>
+                                <td class="text-truncate" style="max-width: 200px; font-size: 11px; font-family: monospace; color: rgba(93, 79, 112, 0.6) !important;" title="{{ $user->password }}">
+                                    {{ $user->password }}
+                                </td>
                                 
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
-                                    <i class="fa-solid fa-trash"></i> Delete
-                                </button> 
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                <td class="text-truncate">{{ $user->role ? $user->role->role_name : 'No Role' }}</td>
+                                
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                        </a>
+                                        
+                                        <form method="post" action="{{ route('user.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fa-solid fa-trash"></i> Delete
+                                            </button> 
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                {{ $users->links() }}
+            </div>
+        @endif
     </div>
 </x-app-layout>

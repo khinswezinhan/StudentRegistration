@@ -36,9 +36,8 @@ Route::get('/user/index', [UserController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('user');
 
 
-//Route::get('/', [CreateContentController::class, 'index']);
 
-//student
+//student 
 
 Route::get('/user-create-form', function () {
     return view('/student/create'); 
@@ -79,6 +78,10 @@ Route::get('/course', [CourseController::class, 'index'])
     ->name('course.index');
 
 //course
+Route::get('/course', [CourseController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('course.index');
+
 Route::get('/course/create', [CourseController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('course.create');
@@ -98,6 +101,12 @@ Route::put('/course/{id}', [CourseController::class, 'update'])
 Route::delete('/course/{course}', [CourseController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('course.destroy');
+
+Route::delete('/course-file/{id}', [CourseController::class, 'destroyFile'])
+    ->middleware(['auth', 'verified'])
+    ->name('course.file.destroy');
+
+Route::delete('/course/{id}/delete-file', [CourseController::class, 'deleteFile'])->name('course.file.delete');
 
 //user
 Route::middleware(['auth', 'verified'])->group(function () {

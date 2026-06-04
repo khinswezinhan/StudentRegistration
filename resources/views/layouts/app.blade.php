@@ -16,16 +16,29 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
-            .my-dashboard-wrapper { 
+            .my-main-layout {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            .my-sticky-navbar {
+                position: sticky;
+                top: 0;
+                z-index: 1020;
+                width: 100%;
+            }
+
+            .my-dashboard-body { 
                 display: flex; 
-                min-height: 100vh; 
+                flex-grow: 1;
                 align-items: stretch;
             }
             
             .my-sidebar { 
-                width: 260px; 
+                width: 250px; 
                 background-color: rgb(93, 79, 112) !important; 
-                padding-top: 20px; 
+                padding-top: 10px;
                 flex-shrink: 0;
                 display: flex;
                 flex-direction: column;
@@ -41,73 +54,93 @@
             .nav-link-custom { 
                 display: flex; 
                 align-items: center; 
-                justify-content: space-between; 
-                padding: 12px 25px; 
-                color: rgba(255, 255, 255, 0.8); 
-                text-decoration: none; 
+                padding: 14px 24px !important; 
+                color: rgba(255, 255, 255, 0.85) !important; 
+                text-decoration: none !important; 
+                font-size: 15px;
+                font-weight: 500;
                 transition: all 0.2s ease;
+                border-left: 4px solid transparent;
             }
             
             .nav-link-custom:hover, .nav-link-custom.active { 
-                background-color: rgba(255, 255, 255, 0.1); 
-                color: #ffffff; 
-                border-left: 4px solid #ffffff; 
+                background-color: rgba(255, 255, 255, 0.1) !important; 
+                color: #ffffff !important; 
+                border-left: 4px solid #ffffff !important; 
+            }
+
+            
+            .nav-link-custom i {
+                width: 24px;
+                font-size: 16px;
+                text-align: center;
             }
         </style>
     </head>
     <body class="font-sans antialiased">
         
-        <div class="my-dashboard-wrapper">
+        <div class="my-main-layout">
 
-            <div class="my-sidebar">
-                <div class="list-group list-group-flush bg-transparent">
-                    
-                    <a href="{{ route('dashboard') }}" class="nav-link-custom {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <div><i class="fa-solid fa-gauge me-2"></i> Dashboard</div>
-                    </a>
-                    
-                    <a href="{{ route('student') }}" class="nav-link-custom {{ request()->routeIs('student') ? 'active' : '' }}">
-                        <div><i class="fa-solid fas fa-book-reader me-2"></i> Student List</div>
-                    </a>
-                    
-                    <a href="{{ route('teacher') }}" class="nav-link-custom {{ request()->routeIs('teacher') ? 'active' : '' }}">
-                        <div><i class="fa-solid fas fa-chalkboard-teacher me-2"></i> Teacher List</div>
-                    </a>
-                    
-                    <a href="{{ route('course') }}" class="nav-link-custom {{ request()->routeIs('course') ? 'active' : '' }}">
-                        <div><i class="fa-solid fa-circle-check me-2"></i> Course</div>
-                    </a>
-
-                    
-
-                    @if(auth()->check() && auth()->user()->role_id == 1)
-                        <a href="{{ route('user') }}" class="nav-link-custom {{ request()->routeIs('user') ? 'active' : '' }}">
-                            <div><i class="fa-solid fa-circle-check me-2"></i> User List</div>
-                        </a>
-                    @endif
-
-                    
-                </div>
-            </div>
-
-            <div class="my-content-area">
-                
+         
+            <div class="my-sticky-navbar shadow-sm">
                 @include('layouts.navigation') 
-
-                @isset($header)
-                    <header class="bg-white shadow-sm">
-                        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-                            {{ $header }}
-                        </div>
-                    </header>
-                @endisset
-
-                <main class="p-4 flex-grow-1">
-                    {{ $slot }}
-                </main>
-
             </div>
-        </div>
+
+ 
+            <div class="my-dashboard-body">
+
+                {{-- Sidebar Area --}}
+                <div class="my-sidebar">
+                    <div class="list-group list-group-flush bg-transparent">
+                        
+                        {{-- Student List --}}
+                        <a href="{{ route('student') }}" class="nav-link-custom {{ request()->routeIs('student') ? 'active' : '' }}">
+                            <i class="fa-solid fas fa-book-reader me-2"></i>
+                            <span>Student List</span>
+                        </a>
+                        
+                        {{-- Teacher List --}}
+                        <a href="{{ route('teacher') }}" class="nav-link-custom {{ request()->routeIs('teacher') ? 'active' : '' }}">
+                            <i class="fa-solid fas fa-chalkboard-teacher me-2"></i>
+                            <span>Teacher List</span>
+                        </a>
+                        
+                        {{-- Course --}}
+                        <a href="{{ route('course') }}" class="nav-link-custom {{ request()->routeIs('course') ? 'active' : '' }}">
+                            <i class="fa-solid fa-circle-check me-2"></i>
+                            <span>Course</span>
+                        </a>
+
+                        {{-- User List (Admin Only) --}}
+                        @if(auth()->check() && auth()->user()->role_id == 1)
+                            <a href="{{ route('user') }}" class="nav-link-custom {{ request()->routeIs('user') ? 'active' : '' }}">
+                                <i class="fa-solid fa-users me-2"></i> {{-- Icon ကို ညီအောင် User Icon ပြောင်းပေးထားတယ် --}}
+                                <span>User List</span>
+                            </a>
+                        @endif
+                        
+                    </div>
+                </div>
+
+                {{-- Main Content Area --}}
+                <div class="my-content-area">
+                    
+                    @isset($header)
+                        <header class="bg-white shadow-sm">
+                            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                                {{ $header }}
+                            </div>
+                        </header>
+                    @endisset
+
+                    <main class="p-4 flex-grow-1">
+                        {{ $slot }}
+                    </main>
+
+                </div>
+
+            </div> 
+        </div> 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </body>

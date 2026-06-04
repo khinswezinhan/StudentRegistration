@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
-
+use Illuminate\Http\Request;
 
 
 class StudentController extends Controller
@@ -39,12 +39,24 @@ class StudentController extends Controller
      }
 
 
-     public function index() 
-       {
-          $allContents = Student::all(); 
-          $data = ['students' => $allContents];
-          return view('/student/index', $data);
-       }
+     public function index(Request $request) 
+{
+    $query = Student::query();
+
+    
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
+    }
+
+    if ($request->filled('class')) {
+        $query->where('class', 'like', '%' . $request->class . '%');
+    }
+
+    $allContents = $query->paginate(5)->appends($request->all());
+    $data = ['students' => $allContents];
+
+    return view('student.index', $data);
+}
      public function destroy(Student $student) 
        {
           $student->delete();
