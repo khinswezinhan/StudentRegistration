@@ -19,7 +19,8 @@
             .my-main-layout {
                 display: flex;
                 flex-direction: column;
-                min-height: 100vh;
+                height: 100vh; 
+                overflow: hidden;
             }
 
             .my-sticky-navbar {
@@ -27,12 +28,14 @@
                 top: 0;
                 z-index: 1020;
                 width: 100%;
+                flex-shrink: 0; 
             }
 
             .my-dashboard-body { 
                 display: flex; 
                 flex-grow: 1;
                 align-items: stretch;
+                overflow: hidden; 
             }
             
             .my-sidebar { 
@@ -42,6 +45,7 @@
                 flex-shrink: 0;
                 display: flex;
                 flex-direction: column;
+                overflow-y: auto; 
             }
             
             .my-content-area { 
@@ -49,6 +53,8 @@
                 background-color: #f1f3f6; 
                 display: flex;
                 flex-direction: column;
+                overflow-y: auto; 
+                height: 100%;
             }
             
             .nav-link-custom { 
@@ -69,7 +75,6 @@
                 border-left: 4px solid #ffffff !important; 
             }
 
-            
             .nav-link-custom i {
                 width: 24px;
                 font-size: 16px;
@@ -81,12 +86,10 @@
         
         <div class="my-main-layout">
 
-         
             <div class="my-sticky-navbar shadow-sm">
                 @include('layouts.navigation') 
             </div>
 
- 
             <div class="my-dashboard-body">
 
                 {{-- Sidebar Area --}}
@@ -114,7 +117,7 @@
                         {{-- User List (Admin Only) --}}
                         @if(auth()->check() && auth()->user()->role_id == 1)
                             <a href="{{ route('user') }}" class="nav-link-custom {{ request()->routeIs('user') ? 'active' : '' }}">
-                                <i class="fa-solid fa-users me-2"></i> {{-- Icon ကို ညီအောင် User Icon ပြောင်းပေးထားတယ် --}}
+                                <i class="fa-solid fa-users me-2"></i>
                                 <span>User List</span>
                             </a>
                         @endif

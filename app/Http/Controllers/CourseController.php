@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCourseRequest;
 use App\Models\Course;
 use App\Models\Teacher; 
+use App\Models\FileModel; 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File; 
@@ -44,8 +45,20 @@ class CourseController extends Controller
         
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
+                $pureOriginalName = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                
+                $filename = time() . '_' . $pureOriginalName;
                 $file->move(public_path('file'), $filename);
+                $filePath = 'file/' . $filename;
+
+                FileModel::create([
+                    'file_name' => $pureOriginalName, 
+                    'directory' => 'file',
+                    'extension' => $extension,
+                    'file_path' => $filePath, 
+                ]);
+
                 $fileNames[] = $filename; 
             }
         }
@@ -65,6 +78,8 @@ class CourseController extends Controller
                 if (File::exists($filePath)) {
                     File::delete($filePath);
                 }
+
+                FileModel::where('file_path', 'file/' . $fileName)->delete();
             }
         }
 
@@ -95,8 +110,20 @@ class CourseController extends Controller
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
+                $pureOriginalName = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                
+                $filename = time() . '_' . $pureOriginalName;
                 $file->move(public_path('file'), $filename);
+                $filePath = 'file/' . $filename;
+
+                FileModel::create([
+                    'file_name' => $pureOriginalName, 
+                    'directory' => 'file',
+                    'extension' => $extension,
+                    'file_path' => $filePath,
+                ]);
+
                 $currentFiles[] = $filename; 
             }
         }
@@ -115,10 +142,13 @@ class CourseController extends Controller
 
         $currentFiles = is_array($course->file) ? $course->file : [];
 
+        // ၁။ Storage ထဲက တကယ့် ဖိုင်အစစ်ကို ဖျက်တယ်
         $filePath = public_path('file/' . $fileNameToDelete);
         if (File::exists($filePath)) {
             File::delete($filePath);
         }
+
+        FileModel::where('file_path', 'file/' . $fileNameToDelete)->delete();
 
         $updatedFiles = array_values(array_filter($currentFiles, function($name) use ($fileNameToDelete) {
             return $name !== $fileNameToDelete;

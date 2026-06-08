@@ -139,23 +139,70 @@
                                 <td>{{ $course->course_name }}</td>
                                 <td>{{ $course->teacher ? $course->teacher->name : 'No Teacher' }}</td>
                                 
-                               
                                 <td>
-                                    @if($course->file && is_array($course->file) && count($course->file) > 0)
-                                        <div class="d-flex flex-column gap-1">
-                                            @foreach($course->file as $singleFile)
-                                                <a href="{{ asset('file/' . $singleFile) }}" 
-                                                   target="_blank" 
-                                                   class="btn btn-sm btn-outline-secondary text-start text-truncate"
-                                                   style="padding: 4px 8px; font-size: 12px; max-width: 220px;">
-                                                    <i class="fa-solid fa-file-arrow-down me-1"></i> {{ Str::limit($singleFile, 20) }}
-                                                </a>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        <span class="text-muted" style="font-size: 13px;">No File</span>
-                                    @endif
-                                </td>
+    @if($course->file && is_array($course->file) && count($course->file) > 0)
+        <div class="d-flex flex-column gap-1">
+            @foreach($course->file as $singleFile)
+                @php
+                    $cleanFileName = Str::after($singleFile, '_');
+
+                    $ext = strtolower(pathinfo($singleFile, PATHINFO_EXTENSION));
+
+                    switch($ext) {
+                        case 'pdf':
+                            $iconClass = 'fa-solid fa-file-pdf text-danger'; 
+                            break;
+                        case 'doc':
+                        case 'docx':
+                            $iconClass = 'fa-solid fa-file-word text-primary'; 
+                            break;
+                        case 'xls':
+                        case 'xlsx':
+                            $iconClass = 'fa-solid fa-file-excel text-success'; 
+                            break;
+                        case 'ppt':
+                        case 'pptx':
+                            $iconClass = 'fa-solid fa-file-powerpoint text-warning'; 
+                            break;
+                        case 'txt':
+                            $iconClass = 'fa-solid fa-file-lines text-secondary'; 
+                            break;
+                        case 'png':
+                        case 'jpg':
+                        case 'jpeg':
+                        case 'gif':
+                        case 'webp':
+                            $iconClass = 'fa-solid fa-file-image text-info'; 
+                            break;
+                        case 'mp4':
+                        case 'mov':
+                        case 'avi':
+                        case 'mkv':
+                            $iconClass = 'fa-solid fa-file-video text-dark'; 
+                            break;
+                        case 'mp3':
+                        case 'wav':
+                            $iconClass = 'fa-solid fa-file-audio text-purple';
+                            break;
+                        case 'zip':
+                        case 'rar':
+                            $iconClass = 'fa-solid fa-file-zipper text-muted'; 
+                            break;
+                        default:
+                            $iconClass = 'fa-solid fa-file text-muted'; 
+                @endphp
+                <a href="{{ asset('file/' . $singleFile) }}" 
+                   target="_blank" 
+                   class="btn btn-sm btn-outline-secondary text-start text-truncate"
+                   style="padding: 4px 8px; font-size: 12px; max-width: 240px;">
+                     <i class="{{ $iconClass }} me-1"></i> {{ Str::limit($cleanFileName, 20) }}
+                </a>
+            @endforeach
+        </div>
+    @else
+        <span class="text-muted" style="font-size: 13px;">No File</span>
+    @endif
+</td>
                                 
                                 <td>
                                     <div class="d-flex gap-2">

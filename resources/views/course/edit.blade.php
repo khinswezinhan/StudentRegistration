@@ -100,7 +100,8 @@
                 const fileRow = document.getElementById(rowId);
                 const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                fetch("{{ route('course.file.delete', $course->id) }}", {
+                // 💡 Route Name နေရာမှာ နင့်ရဲ့ web.php ထဲက route name အတိုင်း 'course.deleteFile' လို့ ပြောင်းပေးထားတယ်နော်
+                fetch("{{ route('course.file.delete', $course->id) }}",{
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': token,
