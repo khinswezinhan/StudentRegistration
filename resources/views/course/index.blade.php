@@ -140,56 +140,57 @@
                                 <td>{{ $course->teacher ? $course->teacher->name : 'No Teacher' }}</td>
                                 
                                 <td>
-    @if($course->file && is_array($course->file) && count($course->file) > 0)
+    @if($course->file && (is_array($course->file) || is_object($course->file)) && count((array)$course->file) > 0)
         <div class="d-flex flex-column gap-1">
-            @foreach($course->file as $singleFile)
+            @foreach((array)$course->file as $singleFile)
                 @php
+                    
+                    $singleFile = is_string($singleFile) ? $singleFile : '';
+                    
+                    if (empty($singleFile)) {
+                        continue; 
+                    }
+
+                    
                     $cleanFileName = Str::after($singleFile, '_');
 
+                    
                     $ext = strtolower(pathinfo($singleFile, PATHINFO_EXTENSION));
 
+                    
                     switch($ext) {
                         case 'pdf':
-                            $iconClass = 'fa-solid fa-file-pdf text-danger'; 
+                            $iconClass = 'fa-solid fa-file-pdf text-danger';
                             break;
                         case 'doc':
                         case 'docx':
-                            $iconClass = 'fa-solid fa-file-word text-primary'; 
+                            $iconClass = 'fa-solid fa-file-word text-primary';
                             break;
                         case 'xls':
                         case 'xlsx':
-                            $iconClass = 'fa-solid fa-file-excel text-success'; 
+                            $iconClass = 'fa-solid fa-file-excel text-success';
                             break;
                         case 'ppt':
                         case 'pptx':
-                            $iconClass = 'fa-solid fa-file-powerpoint text-warning'; 
+                            $iconClass = 'fa-solid fa-file-powerpoint text-warning';
                             break;
                         case 'txt':
-                            $iconClass = 'fa-solid fa-file-lines text-secondary'; 
+                            $iconClass = 'fa-solid fa-file-lines text-secondary';
                             break;
                         case 'png':
                         case 'jpg':
                         case 'jpeg':
                         case 'gif':
                         case 'webp':
-                            $iconClass = 'fa-solid fa-file-image text-info'; 
-                            break;
-                        case 'mp4':
-                        case 'mov':
-                        case 'avi':
-                        case 'mkv':
-                            $iconClass = 'fa-solid fa-file-video text-dark'; 
-                            break;
-                        case 'mp3':
-                        case 'wav':
-                            $iconClass = 'fa-solid fa-file-audio text-purple';
+                            $iconClass = 'fa-solid fa-file-image text-info';
                             break;
                         case 'zip':
                         case 'rar':
-                            $iconClass = 'fa-solid fa-file-zipper text-muted'; 
+                            $iconClass = 'fa-solid fa-file-zipper text-muted';
                             break;
                         default:
-                            $iconClass = 'fa-solid fa-file text-muted'; 
+                            $iconClass = 'fa-solid fa-file text-muted';
+                    }
                 @endphp
                 <a href="{{ asset('file/' . $singleFile) }}" 
                    target="_blank" 
