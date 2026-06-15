@@ -42,12 +42,12 @@
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Name</label></b>
-                    <input class="form-control" type="text" name="name" required>
+                    <input class="form-control" type="text" name="name" required value="{{ old('name') }}">
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Email</label></b>
-                    <input class="form-control" type="email" name="email" required>
+                    <input class="form-control" type="email" name="email" required value="{{ old('email') }}">
                 </div>
 
                 <div class="mb-3">

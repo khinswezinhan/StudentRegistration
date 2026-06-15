@@ -2,9 +2,21 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             
-            <div class="flex align-items-center">
+            <div class="flex align-items-center gap-2">
                 <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->routeIs('dashboard') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
                     <i class="fa-solid fa-gauge me-2"></i> Dashboard
+                </a>
+
+                <a href="/user-create-form" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->is('user-create-form') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-user-graduate me-2"></i> Create Student
+                </a>
+
+                <a href="/user-create" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->is('user-create') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-chalkboard-user me-2"></i> Create Teacher
+                </a>
+
+                <a href="/course/create" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->is('course/create') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-circle-check me-2"></i> Create Course
                 </a>
             </div>
 
@@ -12,7 +24,7 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-transparent hover:text-gray-200 focus:outline-none transition ease-in-out duration-150">
-                            <div class="fs-5 text-white">{{ Auth::user()->name }}</div>
+                            <div class="text-capitalize text-white">{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -54,6 +66,18 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="/user-create-form" :active="request()->is('user-create-form')">
+                {{ __('Create Student') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="/user-create" :active="request()->is('user-create')">
+                {{ __('Create Teacher') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link href="/course/create" :active="request()->is('course/create')">
+                {{ __('Create Course') }}
             </x-responsive-nav-link>
         </div>
 

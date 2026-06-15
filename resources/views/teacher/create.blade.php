@@ -44,32 +44,40 @@
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Name</label></b>
-                    <input class="form-control" type="text" name="name" required>
+                    <input class="form-control" type="text" name="name" required value="{{ old('name') }}">
+
+                    @error('name')
+                    <p class="text-danger">{{ $message }}</p>
+                    @enderror
+
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Rank</label></b>
-                    <input class="form-control" type="text" name="rank" required>
+                    <input class="form-control" type="text" name="rank" required value="{{ old('rank') }}">
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Email</label></b>
-                    <input class="form-control" type="email" name="email" required>
+                    <input class="form-control" type="email" name="email" required value="{{ old('email') }}">
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Phone Number</label></b>
-                    <input class="form-control" type="text" name="phone">
+                    <input class="form-control" type="text" name="phone" value="{{ old('phone') }}">
+                     @error('phone')
+                    <p class="text-danger">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4"> 
                     <b><label class="form-label form-theme-label">Address</label></b>
-                    <input class="form-control" type="text" name="address">
+                    <input class="form-control" type="text" name="address" value="{{ old('address') }}">
                 </div>
 
                  <div class="mb-3">
                     <b><label class="form-label form-theme-label">Upload your photo</label></b>
-                    <input class="form-control" type="file" name="image" required>
+                    <input class="form-control" type="file" name="image" required value="{{ old('image') }}">
                 </div>
 
                 <div class="mb-2">

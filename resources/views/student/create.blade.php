@@ -43,31 +43,37 @@
                 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Name</label></b>
-                    <input class="form-control" type="text" name="name" required>
+                    <input class="form-control" type="text" name="name" required value="{{ old('name') }}">
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Class</label></b>
-                    <input class="form-control" type="text" name="class" required>
+                    <input class="form-control" type="text" name="class" required value="{{ old('class') }}">
                 </div>
+
+                
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Email</label></b>
-                    <input class="form-control" type="email" name="email" required>
+                    <input class="form-control" type="email" name="email" required value="{{ old('email') }}">
+                    @error('email')
+                    <p class="text-danger">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Phone Number</label></b>
                     <input class="form-control" type="text" name="phone">
                 </div>
+               
 
                 <div class="mb-4"> <b><label class="form-label form-theme-label">Address</label></b>
-                    <input class="form-control" type="text" name="address">
+                    <input class="form-control" type="text" name="address" value="{{ old('address') }}">
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Upload your photo</label></b>
-                    <input class="form-control" type="file" name="image" required>
+                    <input class="form-control" type="file" name="image" required value="{{ old('image') }}">
                 </div>
 
                 <div class="mb-2">

@@ -56,7 +56,7 @@
         <div class="mt-2 mb-4">
             <a href="/user-create" class="text-decoration-none">
                 <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
-                    <i class="fa-solid fa-plus me-1"></i> Create New Content
+                    <i class="fa-solid fa-plus me-1"></i> Create New Teacher's content
                 </button>
             </a>
         </div>

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTeacherRequest extends FormRequest
 {
@@ -22,13 +23,27 @@ class StoreTeacherRequest extends FormRequest
      */
     public function rules(): array
     {
+        // 💡 လက်ရှိ Route ကနေ ပြင်မယ့် teacher ID ကို လှမ်းယူတာပါ
+        $teacherId = $this->route('teacher') ?? $this->id; 
+
         return [
-        'name' => 'required',
-        'rank' => 'required',
-        'email' => 'required|email|unique:students,email',
-        'phone' => 'required',
-        'address' => 'required',
-        'image' => 'nullable|file|mimes:png,jpg,jpeg,pdf|max:5120',
-        ];
+            'name' => ['required', 'min:3'],
+            'rank' => 'required',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('teachers', 'email')->ignore($teacherId), // 💡 လက်ရှိဆရာ့ email ဆိုရင် ကျော်ပေးမယ်
+                Rule::unique('students', 'email')
+            ],
+            'phone' => [
+                'required',
+                'min:11',
+                'max:11',
+                Rule::unique('teachers', 'phone')->ignore($teacherId), // 💡 လက်ရှိဆရာ့ ဖုန်းဆိုရင် ကျော်ပေးမယ်
+                Rule::unique('students', 'phone')
+            ],
+            'address' => 'required',
+            'image' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
+        ]; 
     }
 }
