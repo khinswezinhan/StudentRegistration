@@ -45,6 +45,7 @@ class StoreStudentRequest extends FormRequest
                 'unique:teachers,phone', 
             ],
             'address' => 'required',
+            'status' => 'sometimes|in:active,inactive',
         ];
     }
 

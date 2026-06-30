@@ -15,7 +15,6 @@
         .table-custom-theme {
             margin-bottom: 0 !important;
             border: none !important;
-            
             table-layout: fixed;
             width: 100%;
         }
@@ -54,11 +53,39 @@
             border-radius: 10px;
             background-color: white;
         }
+
+        /* 💡 Action icons တွေ disabled ဖြစ်နေရင် ပြမယ့် Style */
+        .icon-disabled {
+            color: #6c757d !important;
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none; /* ကလစ်နှိပ်လို့မရအောင် ပိတ်ထားခြင်း */
+        }
+
+        .btn-inline-reset {
+            background: none;
+            border: none;
+            padding: 0;
+        }
     </style>
 
     <div class="py-4">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="mt-2 mb-4">
-            <a href="{{ route('manage_user.create') }}" class="text-decoration-none">
+            <a href="{{ route('user.create') }}" class="text-decoration-none">
                 <button type="button" class="btn btn-success fw-medium px-3 py-2">
                     <i class="fa-solid fa-plus me-1"></i> Create New User
                 </button>
@@ -134,43 +161,43 @@
                             <th scope="col" style="width: 70px;">ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Email</th>
-                            <th scope="col" style="width: 200px;">Password</th> {{-- Password ကို ၂၀၀ ပစ်ဇယ်ပဲ ပေးထားမယ် --}}
-                            <th scope="col" style="width: 130px;">Role</th>
-                            <th scope="col">Action</th>
+                            
+                            <th scope="col" style="width: 110px;">Role</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" style="width: 100px;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
                         @foreach($users as $user)
-                        
                             <tr>
                                 <th scope="row">{{ $users->firstItem() + $loop->index }}</th>
                                 <td class="text-truncate">{{ $user->name }}</td>
                                 <td class="text-truncate">{{ $user->email }}</td>
                                 
-                                <td class="text-truncate" style="max-width: 200px; font-size: 11px; font-family: monospace; color: rgba(93, 79, 112, 0.6) !important;" title="{{ $user->password }}">
-                                    {{ $user->password }}
-                                </td>
+                                
                                 
                                 <td class="text-truncate">{{ $user->role ? $user->role->role_name : 'No Role' }}</td>
                                 
+                                
+                                <td class="text-truncate">{{ $user->status }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('user.edit', $user->id) }}">
-                                            <i class="fa-solid fa-pen-to-square text-warning"></i>
-                                        </a>
                                         
-                                        <form method="post" action="{{ route('user.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit">
-                                                <i class="fa-solid fa-trash text-danger"></i> 
-                                            </button> 
-                                        </form>
+                                            <a href="{{ route('user.edit', $user->id) }}" title="Edit User">
+                                                <i class="fa-solid fa-pen-to-square text-warning"></i>
+                                            </a>
+                                        
+                                            <form method="post" action="{{ route('user.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?')" class="m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-inline-reset" title="Delete User">
+                                                    <i class="fa-solid fa-trash text-danger"></i> 
+                                                </button> 
+                                            </form>
+                                      
                                     </div>
                                 </td>
                             </tr>
-                            
                         @endforeach
                     </tbody>
                 </table>

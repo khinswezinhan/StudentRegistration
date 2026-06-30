@@ -13,7 +13,7 @@ class Teacher extends Model
 
     protected $table = 'teachers';
 
-    protected $fillable = ['name', 'rank', 'department_id', 'course_id', 'email', 'phone', 'address', 'image'];
+    protected $fillable = ['name', 'rank', 'department_id', 'course_id', 'email', 'phone', 'address', 'image','status'];
 
     public function department()
     {

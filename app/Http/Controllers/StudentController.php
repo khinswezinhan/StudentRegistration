@@ -27,16 +27,12 @@ class StudentController extends Controller
      */
     public function Student(StoreStudentRequest $request) : RedirectResponse 
     {
-        // 🎯 ၁။ Validation အောင်ပြီးသား ဒေတာကို ယူမယ် (ဒီထဲမှာ class_model_id ပါပြီးသားဖြစ်လို့ အိုကေတယ်)
         $incomingFields = $request->validated();
         
         $incomingFields['name'] = strip_tags($incomingFields['name']);
         $incomingFields['email'] = strip_tags($incomingFields['email']);
         $incomingFields['phone'] = strip_tags($incomingFields['phone']);
         $incomingFields['address'] = strip_tags($incomingFields['address']);
-
-        // 💡 ရှင်းလင်းချက်: စောစောက class_model_id ကို ဖမ်းပြီး class နာမည်လိုက်ရှာတဲ့ ကုဒ်ဟောင်းတွေကို ဖြုတ်ပစ်လိုက်ပြီဟေ့!
-        // ဘာလို့လဲဆိုတော့ Database ထဲမှာ class_model_id အတိုင်း တန်းသိမ်းမှာမို့လို့ပါဗျာ။
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -45,57 +41,58 @@ class StudentController extends Controller
             $incomingFields['image'] = $filename; 
         }
 
-        // ၂။ ကျောင်းသားကို ဒေတာဘေ့စ်ထဲ သိမ်းမယ် (students table ထဲမှာ id အမှန်အတိုင်း တန်းဝင်သွားပြီ)
+        // 💡 ပြီးပြည့်စုံအောင် ဖြည့်စွက်ချက်: Create လုပ်ချိန်တွင် Form မလိုဘဲ Auto Active ပေးလိုက်ခြင်း
+        $incomingFields['status'] = 'active';
+
         $student = Student::create($incomingFields);
 
-        // ၃။ Pivot Table (course_student) ထဲမှာ ဆက်စပ် Course တွေ တခါတည်း တွဲသိမ်းမယ်
+        // Pivot Table (course_student) ထဲမှာ ဆက်စပ် Course တွေ တွဲသိမ်းခြင်း
         $classId = $request->class_model_id;
         if ($classId && $student) {
-            // အတန်း ID နဲ့ ကိုက်ညီတဲ့ course_id တွေကို ဆွဲထုတ်တယ်
             $courseIds = Course::where('class_model_id', $classId)->pluck('id')->toArray();
-
-            // course_student ထဲမှာ student_id နဲ့ course_id ကို သွားတွဲသိမ်းလိုက်ပြီဟေ့!
             $student->courses()->sync($courseIds);
         }
         
-        return redirect()->route('student')->with('success', 'Student created successfully!');
+        return redirect()->route('student')->with('success', 'Student created successfully with Active status!');
     }
 
     /**
      * Student Index / List with Search Filter
      */
-  public function index(Request $request) 
-{
-    $query = Student::with(['classModel.courses']);
+    public function index(Request $request) 
+    {
+        $query = Student::with(['classModel.courses']);
 
-    // Student Name ကို Space နှင့် Case Ignore လုပ်၍ LIKE ဖြင့် ရှာဖွေခြင်း
-    if ($request->filled('name')) {
-        // Request ထဲက လာတဲ့စာသားကို Space အကုန်ဖြုတ်သည်
-        $searchStudentName = str_replace(' ', '', $request->name);
+        // Student Name ကို Space နှင့် Case Ignore လုပ်၍ LIKE ဖြင့် ရှာဖွေခြင်း
+        if ($request->filled('name')) {
+            $searchStudentName = str_replace(' ', '', $request->name);
+            $query->whereRaw("REPLACE(name, ' ', '') LIKE ?", ['%' . $searchStudentName . '%']);
+        }
 
-        $query->whereRaw("REPLACE(name, ' ', '') LIKE ?", ['%' . $searchStudentName . '%']);
+        // Class Model ID ရှာဖွေခြင်း
+        if ($request->filled('class_model_id')) {
+            $query->where('class_model_id', 'like', '%' . $request->class_model_id . '%');
+        }
+
+        $allContents = $query->paginate(5)->appends($request->all());
+        $classes = ClassModel::all(); 
+
+        return view('student.index', [
+            'students' => $allContents,
+            'classes' => $classes
+        ]);
     }
-
-    // Class Model ID ရှာဖွေခြင်း (ID က ကွက်တိစစ်ရမှာမို့လို့ Space ဖြုတ်စရာမလိုပါဘူး)
-    if ($request->filled('class_model_id')) {
-        $query->where('class_model_id', 'like', '%' . $request->class_model_id . '%');
-    }
-
-    $allContents = $query->paginate(5)->appends($request->all());
-    
-    $classes = ClassModel::all(); 
-
-    return view('student.index', [
-        'students' => $allContents,
-        'classes' => $classes
-    ]);
-}
 
     /**
      * Delete Student
      */
     public function destroy(Student $student) 
     {
+        // 💡 ပြီးပြည့်စုံအောင် ဖြည့်စွက်ချက်: Inactive ဒေတာဖြစ်နေလျှင် ဖျက်ခွင့်မပြုဘဲ ပိတ်ချခြင်း
+        if ($student->status === 'inactive') {
+            return redirect()->back()->with('error', 'ဤကျောင်းသားသည် Inactive ဖြစ်နေသဖြင့် ဖျက်ဆီးခွင့်မရှိပါ!');
+        }
+
         if ($student->image) {
             $imagePath = public_path('image/' . $student->image);
             if (File::exists($imagePath)) {
@@ -113,6 +110,12 @@ class StudentController extends Controller
     public function showEditScreen($id) 
     {
         $student = Student::findOrFail($id);
+
+        // 💡 ပြီးပြည့်စုံအောင် ဖြည့်စွက်ချက်: Inactive ဖြစ်နေလျှင် Edit Page ဝင်ခွင့် လုံးဝမပြုပါ
+        if ($student->status === 'inactive') {
+            return redirect('/student/index')->with('error', 'ဤကျောင်းသားသည် Inactive ဖြစ်နေသဖြင့် ပြင်ဆင်ခွင့်မရှိတော့ပါ!');
+        }
+
         $classes = ClassModel::all(); 
         $courses = Course::all();
 
@@ -125,12 +128,23 @@ class StudentController extends Controller
     public function update($id, StoreStudentRequest $request) : RedirectResponse 
     {
         $student = Student::findOrFail($id);
+
+        // 💡 ပြီးပြည့်စုံအောင် ဖြည့်စွက်ချက်: အရင်ကတည်းက Inactive ဖြစ်နေခဲ့ရင် အတင်းလှမ်း Update လုပ်တာကိုပါ ထပ်မံကာကွယ်ခြင်း
+        if ($student->status === 'inactive') {
+            return redirect('/student/index')->with('error', 'ဤကျောင်းသားသည် Inactive ဖြစ်နေသဖြင့် ပြင်ဆင်ခွင့်မရှိတော့ပါ!');
+        }
+
+        // StoreStudentRequest က လာတဲ့ ဒေတာကို စစ်ဆေးခြင်း
         $incomingFields = $request->validated();
 
         $incomingFields['name'] = strip_tags($incomingFields['name']);
         $incomingFields['email'] = strip_tags($incomingFields['email']);
         $incomingFields['phone'] = strip_tags($incomingFields['phone']);
         $incomingFields['address'] = strip_tags($incomingFields['address']);
+
+        // 💡 Update အချိန်မှာ Edit Form ရဲ့ Request ကလာတဲ့ Status (active/inactive) ကိုပါ လက်ခံသိမ်းဆည်းမည်
+        // (တကယ်လို့ $request->validated() ထဲမှာ status အတွက် သတ်မှတ်မထားမိရင် Request ကနေ တိုက်ရိုက်ဆွဲယူပါတယ်)
+        $incomingFields['status'] = $request->input('status', $student->status);
 
         if ($request->hasFile('image')) {
             if ($student->image) {
@@ -150,7 +164,7 @@ class StudentController extends Controller
 
         $student->update($incomingFields);
 
-        // 🎯 Optional Bonus: Update လုပ်တဲ့အချိန်မှာလည်း ရွေးလိုက်တဲ့ အတန်းအသစ်ပေါ်မူတည်ပြီး Pivot table ထဲက Course တွေကိုပါ လိုက်ပြောင်းပေးချင်ရင် ဒီကုဒ်လေး ထည့်ထားလို့ရတယ်ဗျာ
+        // Update ဖြစ်သွားတဲ့ အတန်းပေါ်မူတည်ပြီး Pivot table ထဲက Course တွေကို လိုက်ပြောင်းပေးခြင်း
         $classId = $request->class_model_id;
         if ($classId) {
             $courseIds = Course::where('class_model_id', $classId)->pluck('id')->toArray();

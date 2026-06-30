@@ -9,7 +9,7 @@ class Course extends Model
 {
     protected $table = 'courses';
     
-   protected $fillable = ['course_name', 'class_model_id','department_id', 'file'];
+   protected $fillable = ['course_name', 'class_model_id','department_id', 'file','status'];
     
     protected $casts = ['file' => 'array'];
 

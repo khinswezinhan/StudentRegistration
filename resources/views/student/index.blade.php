@@ -131,6 +131,7 @@
                         <th scope="col">Email</th> 
                         <th scope="col">Phone</th>
                         <th scope="col">Address</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Image</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -157,6 +158,7 @@
                             <td class="truncated-email" title="{{ $student->email }}">{{ $student->email }}</td>
                             <td>{{ $student->phone }}</td>
                             <td>{{ $student->address }}</td>
+                            <td>{{ $student->status }}</td>
                             <td>
                                 @if($student->image)
                                     <img src="/image/{{ $student->image }}" width="80" class="rounded">
@@ -165,17 +167,20 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="d-flex gap-2">
-                                    <a href="{{ route('student.edit', $student->id)}}" title="Edit">
-                                        <i class="fa-solid fa-pen-to-square text-warning"></i> 
-                                    </a>
-                                    <form method="post" action="{{ route('student.destroy', $student) }}" onsubmit="return confirm('Are you sure you want to delete?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn p-0 border-0 bg-transparent">
-                                            <i class="fa-solid fa-trash text-danger" title="Delete"></i> 
-                                        </button> 
-                                    </form>
+                                <div class="d-flex gap-2 align-items-center">
+                                    
+                                        <a href="{{ route('student.edit', $student->id)}}" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square text-warning"></i> 
+                                        </a>
+                                        
+                                        <form method="post" action="{{ route('student.destroy', $student) }}" onsubmit="return confirm('Are you sure you want to delete?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn p-0 border-0 bg-transparent">
+                                                <i class="fa-solid fa-trash text-danger" title="Delete"></i> 
+                                            </button> 
+                                        </form>
+                                   
                                 </div>
                             </td>
                         </tr>

@@ -26,127 +26,72 @@
             <div class="mb-3">
                 <label class="form-label form-theme-label fw-bold">Name</label>
                 <input type="text" name="name" class="form-control" value="{{ old('name', $teacher->name) }}">
-                @error('name') 
-                    <div class="text-danger small mt-1">{{ $message }}</div> 
-                @enderror
+                @error('name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
 
             <div class="mb-3">
                 <label class="form-label form-theme-label fw-bold">Rank</label>
                 <input type="text" name="rank" class="form-control" value="{{ old('rank', $teacher->rank) }}">
-                @error('rank') 
-                    <div class="text-danger small mt-1">{{ $message }}</div> 
-                @enderror
+                @error('rank') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
 
             <div class="mb-3">
-    <label class="form-label form-theme-label fw-bold">Department</label>
-    <select class="form-select form-control" name="department_id" id="department-select" required>
-        @foreach($departments as $dept)
-            <option value="{{ $dept->id }}" {{ old('department_id', $teacher->department_id) == $dept->id ? 'selected' : '' }}>
-                {{ $dept->department_name }}
-            </option>
-        @endforeach
-    </select>
-    @error('department_id') 
-        <div class="text-danger small mt-1">{{ $message }}</div> 
-    @enderror
-</div>
-
-<div class="mb-3">
-    <label class="form-label form-theme-label fw-bold">Courses (ပြင်ဆင်ရန်)</label>
-    
-    <div class="row ps-2" id="course-container" data-selected-courses="{{ json_encode(old('course_ids', $teacher->courses->pluck('id')->toArray())) }}">
-        @foreach($courses as $course)
-            <div class="col-md-6 form-check mb-2">
-                <input class="form-check-input" 
-                       type="checkbox" 
-                       name="course_ids[]" 
-                       value="{{ $course->id }}" 
-                       id="edit_course_{{ $course->id }}"
-                       {{ (is_array(old('course_ids')) && in_array($course->id, old('course_ids'))) || (!is_array(old('course_ids')) && $teacher->courses->contains($course->id)) ? 'checked' : '' }}>
-                <label class="form-check-label text-secondary small" for="edit_course_{{ $course->id }}">
-                    {{ $course->course_name }}
-                </label>
+                <label class="form-label form-theme-label fw-bold">Status</label>
+                <select class="form-select form-control" name="status" required>
+                    <option value="active" {{ old('status', $teacher->status) == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ old('status', $teacher->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+                @error('status') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
-        @endforeach
-    </div>
-    @error('course_ids') 
-        <div class="text-danger small mt-1">{{ $message }}</div> 
-    @enderror
-</div>
 
-<script>
-document.getElementById('department-select').addEventListener('change', function () {
-    const departmentId = this.value;
-    const courseContainer = document.getElementById('course-container');
-    
-    // မူလ ရွေးချယ်ထားခဲ့ဖူးသော Course ID များကို JSON ပြန်ဖြည်ယူခြင်း
-    const selectedCourses = JSON.parse(courseContainer.getAttribute('data-selected-courses') || '[]');
+            <div class="mb-3">
+                <label class="form-label form-theme-label fw-bold">Department</label>
+                <select class="form-select form-control" name="department_id" id="department-select" required>
+                    @foreach($departments as $dept)
+                        <option value="{{ $dept->id }}" {{ old('department_id', $teacher->department_id) == $dept->id ? 'selected' : '' }}>
+                            {{ $dept->department_name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('department_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+            </div>
 
-    courseContainer.innerHTML = '<p class="text-muted small">Loading courses...</p>';
+            <div class="mb-3">
+                <label class="form-label form-theme-label fw-bold">Courses (ပြင်ဆင်ရန်)</label>
+                <div class="row ps-2" id="course-container" data-selected-courses="{{ json_encode(old('course_ids', $teacher->courses->pluck('id')->toArray())) }}">
+                    @foreach($courses as $course)
+                        <div class="col-md-6 form-check mb-2">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="course_ids[]" 
+                                   value="{{ $course->id }}" 
+                                   id="edit_course_{{ $course->id }}"
+                                   {{ (is_array(old('course_ids')) && in_array($course->id, old('course_ids'))) || (!is_array(old('course_ids')) && $teacher->courses->contains($course->id)) ? 'checked' : '' }}>
+                            <label class="form-check-label text-secondary small" for="edit_course_{{ $course->id }}">
+                                {{ $course->course_name }}
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+                @error('course_ids') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+            </div>
 
-    if (!departmentId) return;
-
-    // Controller ရဲ့ getCourses Method ဆီသို့ လှမ်းတောင်းခြင်း
-    fetch(`/get-courses-by-dept/${departmentId}`)
-        .then(response => response.json())
-        .then(courses => {
-            courseContainer.innerHTML = ''; // အဟောင်းများရှင်းထုတ်ရန်
-
-            if (courses.length === 0) {
-                courseContainer.innerHTML = '<p class="text-danger small">No courses found for this department.</p>';
-                return;
-            }
-
-            courses.forEach(course => {
-                // အသစ်ထွက်လာတဲ့ List ထဲမှာ ဆရာ/မ ရွေးထားဖူးတဲ့ ID ပါရင် Checked ပေးထားမည်
-                const isChecked = selectedCourses.includes(course.id) ? 'checked' : '';
-
-                const checkboxHtml = `
-                    <div class="col-md-6 form-check mb-2">
-                        <input class="form-check-input" 
-                               type="checkbox" 
-                               name="course_ids[]" 
-                               value="${course.id}" 
-                               id="edit_course_${course.id}"
-                               ${isChecked}>
-                        <label class="form-check-label text-secondary small" for="edit_course_${course.id}">
-                            ${course.course_name}
-                        </label>
-                    </div>
-                `;
-                courseContainer.insertAdjacentHTML('beforeend', checkboxHtml);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            courseContainer.innerHTML = '<p class="text-danger small">Something went wrong. Please try again.</p>';
-        });
-});
-</script>
             <div class="mb-3">
                 <label class="form-label form-theme-label fw-bold">Email</label>
                 <input type="text" name="email" class="form-control" value="{{ old('email', $teacher->email) }}">
-                @error('email') 
-                    <div class="text-danger small mt-1">{{ $message }}</div> 
-                @enderror
+                @error('email') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
 
             <div class="mb-3">
                 <label class="form-label form-theme-label fw-bold">Phone</label>
                 <input type="text" name="phone" class="form-control" value="{{ old('phone', $teacher->phone) }}">
-                @error('phone') 
-                    <div class="text-danger small mt-1">{{ $message }}</div> 
-                @enderror
+                @error('phone') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
 
             <div class="mb-3">
                 <label class="form-label form-theme-label fw-bold">Address</label>
                 <input type="text" name="address" class="form-control" value="{{ old('address', $teacher->address) }}">
-                @error('address') 
-                    <div class="text-danger small mt-1">{{ $message }}</div> 
-                @enderror
+                @error('address') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
 
             <div class="mb-3">
@@ -166,9 +111,7 @@ document.getElementById('department-select').addEventListener('change', function
                            value="{{ $teacher->image ? $teacher->image : 'No file chosen' }}" readonly style="cursor: pointer;"
                            onclick="document.getElementById('image-input').click()">
                 </div>
-                @error('image') 
-                    <div class="text-danger small mt-1">{{ $message }}</div> 
-                @enderror
+                @error('image') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
             </div>
 
             <div class="mt-4">
@@ -179,20 +122,53 @@ document.getElementById('department-select').addEventListener('change', function
     </div>
 
     <script>
-        document.getElementById('image-input').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const fileText = document.getElementById('file-custom-text');
-            const previewImg = document.getElementById('preview-img');
+    document.getElementById('department-select').addEventListener('change', function () {
+        const departmentId = this.value;
+        const courseContainer = document.getElementById('course-container');
+        const selectedCourses = JSON.parse(courseContainer.getAttribute('data-selected-courses') || '[]');
 
-            if (file) {
-                fileText.value = file.name;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewImg.classList.remove('d-none');
+        courseContainer.innerHTML = '<p class="text-muted small">Loading courses...</p>';
+        if (!departmentId) return;
+
+        fetch(`/get-courses-by-dept/${departmentId}`)
+            .then(response => response.json())
+            .then(courses => {
+                courseContainer.innerHTML = '';
+                if (courses.length === 0) {
+                    courseContainer.innerHTML = '<p class="text-danger small">No courses found for this department.</p>';
+                    return;
                 }
-                reader.readAsDataURL(file);
+                courses.forEach(course => {
+                    const isChecked = selectedCourses.includes(course.id) ? 'checked' : '';
+                    const checkboxHtml = `
+                        <div class="col-md-6 form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="course_ids[]" value="${course.id}" id="edit_course_${course.id}" ${isChecked}>
+                            <label class="form-check-label text-secondary small" for="edit_course_${course.id}">${course.course_name}</label>
+                        </div>
+                    `;
+                    courseContainer.insertAdjacentHTML('beforeend', checkboxHtml);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                courseContainer.innerHTML = '<p class="text-danger small">Something went wrong.</p>';
+            });
+    });
+
+    document.getElementById('image-input').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const fileText = document.getElementById('file-custom-text');
+        const previewImg = document.getElementById('preview-img');
+
+        if (file) {
+            fileText.value = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('d-none');
             }
-        });
+            reader.readAsDataURL(file);
+        }
+    });
     </script>
 </x-app-layout>

@@ -22,26 +22,28 @@ class StoreUserRequest extends FormRequest
      */
    public function rules(): array
 {
-    $userId = $this->route('id') ?? $this->route('user')?->id ?? $this->route('user'); 
+    // 💡 လက်ရှိ Route ထဲကလာတဲ့ user id ကို လှမ်းယူခြင်း
+    // ရိုးရိုး route('user') သို့မဟုတ် route('id') မင်းရဲ့ route parameter ပေါ်မူတည်ပြီး ယူပေးရပါမယ်
+    $userId = $this->route('user') ?? $this->route('id');
 
     return [
-        'name'     => 'required|string|min:2|max:255',
+        'name' => ['required', 'string', 'max:255'],
         
+        // 💡 email rules ကို အခုလို ပြောင်းလဲပေးပါ
         'email' => [
-    'required',
-    'string',
-    'max:255',
-    // 💡 'email:rfc,dns' လို့ ပြောင်းလိုက်ရင် .com ပါမှရမယ်၊ တကယ့် internet ပေါ်က domain ဟုတ်မဟုတ်ပါ စစ်ပေးမှာပါဗျာ
-    'email:rfc,dns', 
-    'unique:users,email,'
-],
+            'required', 
+            'string', 
+            'email', 
+            'max:255', 
+            'unique:users,email,' . $userId // 👈 လက်ရှိ ID ကို ignore လုပ်ခိုင်းတဲ့အပိုင်း
+        ],
         
- 
-        'password' =>  ['nullable', 'string', 'min:8', 'confirmed'], 
-            
-        
-        'role_id'  => 'required|exists:roles,id',
+        // password က edit အချိန်မှာ မရိုက်လည်းရအောင် nullable ပေးထားမယ်
+        'password' => ['nullable', 'string', 'min:8'],
+        'role_id' => ['required', 'exists:roles,id'],
+        'status' => ['nullable', 'string', 'in:active,inactive'],
     ];
+
 }
 
 public function messages(): array

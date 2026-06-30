@@ -47,6 +47,7 @@ class StoreTeacherRequest extends FormRequest
             'department_id' => 'required|exists:departments,id',
             'course_ids' => 'nullable|array',
             'course_ids.*' => 'exists:courses,id',
+            'status' => 'sometimes|in:active,inactive',
         ]; 
     }
 }

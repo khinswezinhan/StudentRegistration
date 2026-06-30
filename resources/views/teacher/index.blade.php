@@ -131,6 +131,7 @@
                             <th scope="col">Email</th> 
                             <th scope="col">Phone</th>
                             <th scope="col">Address</th>
+                            <th scope="col">Status</th>
                             <th scope="col">Image</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -147,7 +148,7 @@
                                 <td>
                                     @if($teacher->courses->count() > 0)
                                         @foreach($teacher->courses as $course)
-                                            <span class="">
+                                            <span>
                                                 {{ $course->course_name }}{{ !$loop->last ? ', ' : '' }}
                                             </span>
                                         @endforeach
@@ -159,6 +160,8 @@
                                 <td class="truncated-email" title="{{ $teacher->email }}">{{ $teacher->email }}</td>
                                 <td class="truncated-email" title="{{ $teacher->phone }}">{{ $teacher->phone }}</td>
                                 <td class="truncated-email" title="{{ $teacher->address }}">{{ $teacher->address }}</td>
+                                <td class="truncated-email" title="{{ $teacher->status }}">{{ $teacher->status }}</td>
+
                                 <td>
                                    @if($teacher->image)
                                         <img src="/image/{{ $teacher->image }}" width="80" class="rounded">
@@ -168,20 +171,22 @@
                                 </td>
                                 
                                 <td>
-                                    <div class="d-flex gap-2 align-items-center">
-                                        <a href="{{ route('teacher.edit', $teacher->id) }}" title="edit" class="text-decoration-none">
-                                            <i class="fa-solid fa-pen-to-square text-warning fs-5"></i>
+                                <div class="d-flex gap-2 align-items-center">
+                                    
+                                        <a href="{{ route('teacher.edit', $teacher->id)}}" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square text-warning"></i> 
                                         </a>
                                         
-                                        <form method="post" action="{{ route('teacher.destroy', $teacher) }}" onsubmit="return confirm('Are you sure you want to delete this teacher?')" class="m-0">
+                                        <form method="post" action="{{ route('teacher.destroy', $teacher) }}" onsubmit="return confirm('Are you sure you want to delete?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-link p-0 border-0 align-baseline">
-                                                <i class="fa-solid fa-trash text-danger fs-5" title="Delete"></i> 
+                                            <button type="submit" class="btn p-0 border-0 bg-transparent">
+                                                <i class="fa-solid fa-trash text-danger" title="Delete"></i> 
                                             </button> 
                                         </form>
-                                    </div>
-                                </td>
+                                   
+                                </div>
+                            </td>
                             </tr>
                         @endforeach
                     </tbody>

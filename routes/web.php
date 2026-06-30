@@ -62,7 +62,7 @@ Route::get('/get-courses-by-dept/{department_id}', [TeacherController::class, 'g
 // ==========================================
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/user', [UserController::class, 'index'])->name('user.index');
-    Route::get('/user/create', [UserController::class, 'create'])->name('manage_user.create');
+    Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
     Route::post('/user', [UserController::class, 'store'])->name('user.store');
     Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
     Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');

@@ -53,10 +53,11 @@ class TeacherController extends Controller
             $incomingFields['image'] = $filename;
         }
 
-        // ၁။ Teacher ကို အရင် ဆောက်မယ်
+        // 💡 Create ချိန်တွင် Auto Active ပေးခြင်း
+        $incomingFields['status'] = 'active';
+
         $teacher = Teacher::create($incomingFields);
 
-        // 💡 ၂။ ရွေးချယ်လိုက်တဲ့ သင်တန်းတွေကို ကြားခံ table (course_teacher) ထဲ အလိုအလျောက် သွားသိမ်းပေးတဲ့အပိုင်း
         if ($request->has('course_ids')) {
             $teacher->courses()->attach($request->course_ids);
         }
@@ -65,36 +66,31 @@ class TeacherController extends Controller
     }
 
     public function index(Request $request) 
-{
-    // N+1 Problem မဖြစ်အောင် ကော၊ Index မှာ သင်တန်းနာမည် ပေါ်အောင်ပါ courses ကို တွဲခေါ်ထားသည်
-    $query = Teacher::with(['department', 'courses']);
+    {
+        $query = Teacher::with(['department', 'courses']);
 
-    // Teacher Name ကို Space နှင့် Case Ignore လုပ်၍ LIKE ဖြင့် ရှာဖွေခြင်း
-    if ($request->filled('name')) {
-        // Request ထဲက လာတဲ့စာသားကို Space အကုန်ဖြုတ်သည်
-        $searchTeacherName = str_replace(' ', '', $request->name);
+        if ($request->filled('name')) {
+            $searchTeacherName = str_replace(' ', '', $request->name);
+            $query->whereRaw("REPLACE(name, ' ', '') LIKE ?", ['%' . $searchTeacherName . '%']);
+        }
 
-        $query->whereRaw("REPLACE(name, ' ', '') LIKE ?", ['%' . $searchTeacherName . '%']);
+        if ($request->filled('rank')) {
+            $searchRank = str_replace(' ', '', $request->rank);
+            $query->whereRaw("REPLACE(rank, ' ', '') LIKE ?", ['%' . $searchRank . '%']);
+        }
+
+        $allContents = $query->paginate(5)->appends($request->all());
+        
+        return view('teacher.index', ['teachers' => $allContents]);
     }
-
-    // Rank (ရာထူး) ကို Space နှင့် Case Ignore လုပ်၍ LIKE ဖြင့် ရှာဖွေခြင်း
-    if ($request->filled('rank')) {
-        // Request ထဲက လာတဲ့စာသားကို Space အကုန်ဖြုတ်သည်
-        $searchRank = str_replace(' ', '', $request->rank);
-
-        $query->whereRaw("REPLACE(rank, ' ', '') LIKE ?", ['%' . $searchRank . '%']);
-    }
-
-    $allContents = $query->paginate(5)->appends($request->all());
-    
-    $data = ['teachers' => $allContents];
-    
-    return view('teacher.index', $data);
-}
         
     public function destroy(Teacher $teacher) 
     {
-        // Many-to-Many ဖြစ်လို့ ကြားခံ table ထဲက data ကိုပါ အရင်ဖြုတ်ချပေးပါတယ်
+        // 💡 Inactive ဖြစ်နေလျှင် Back-end ကနေ ဖျက်ခွင့် ထပ်မံပိတ်ပင်ခြင်း
+        if ($teacher->status === 'inactive') {
+            return redirect()->back()->with('error', 'ဤဆရာသည် Inactive ဖြစ်နေသဖြင့် ဖျက်ဆီးခွင့်မရှိပါ!');
+        }
+
         $teacher->courses()->detach();
         
         if ($teacher->image) {
@@ -108,32 +104,38 @@ class TeacherController extends Controller
         return redirect()->back()->with('success', 'Successfully deleted');
     }
 
-   public function showEdit($id) 
-{
-    // 1. Teacher နဲ့ သူသင်နေတဲ့ courses တွေကို အရင်ဆွဲထုတ်မယ်
-    $teacher = Teacher::with('courses')->find($id);
-    
-    // 2. ဘယ်တန်းမှမရှိရင် 404 ပြပေးဖို့ အကောင်းဆုံးမို့ find အစား findOrFail သုံးတာ ပိုစိတ်ချရပါတယ်
-    if (!$teacher) {
-        abort(404, 'Teacher not found');
+    public function showEdit($id) 
+    {
+        $teacher = Teacher::with('courses')->find($id);
+        
+        if (!$teacher) {
+            abort(404, 'Teacher not found');
+        }
+
+        // 💡 Inactive ဖြစ်နေလျှင် Edit URL ကို တိုက်ရိုက်ရိုက်ရိုက်ဝင်လာလည်း ပိတ်ချမည်
+        // if ($teacher->status === 'inactive') {
+        //     return redirect('/teacher/index')->with('error', 'ဤဆရာသည် Inactive ဖြစ်နေသဖြင့် ပြင်ဆင်ခွင့်မရှိပါ!');
+        // }
+
+        $departments = Department::all();
+        $courses = Course::where('department_id', $teacher->department_id)->get(); 
+        
+        return view('teacher.edit', [
+            'teacher' => $teacher,
+            'departments' => $departments,
+            'courses' => $courses
+        ]);
     }
-
-    $departments = Department::all();
-
-    // 💡 ပြင်ဆင်ရမည့်နေရာ: Course::all() အစား Teacher ရဲ့ လက်ရှိ department_id နဲ့ ညီတဲ့ ကောင်တွေကိုပဲ ဆွဲထုတ်မယ်
-    $courses = Course::where('department_id', $teacher->department_id)->get(); 
-    
-    return view('teacher.edit', [
-        'teacher' => $teacher,
-        'departments' => $departments,
-        'courses' => $courses
-    ]);
-}
-
 
     public function update($id, StoreTeacherRequest $request) : RedirectResponse 
     {
         $teacher = Teacher::findOrFail($id);
+
+        // 💡 မတော်တဆ Inactive သမားကို ခိုးပြီး Update လာလုပ်ရင် ပိတ်ရန်
+        // if ($teacher->status === 'inactive') {
+        //     return redirect('/teacher/index')->with('error', 'ဤဆရာသည် Inactive ဖြစ်နေသဖြင့် ပြင်ဆင်ခွင့်မရှိပါ!');
+        // }
+
         $incomingFields = $request->validated();
 
         $incomingFields['department_id'] = strip_tags($incomingFields['department_id']);
@@ -159,11 +161,10 @@ class TeacherController extends Controller
             $incomingFields['image'] = $teacher->image;
         }
 
-        // Teacher data ကို Update လုပ်မယ်
-        $teacher->update($incomingFields);
+        // 💡 Edit Form မှ ရွေးချယ်ပေးလိုက်သော Status အသစ်ကို လက်ခံရယူခြင်း
+        $incomingFields['status'] = $request->input('status', $teacher->status);
 
-        // 💡 ၃။ ကြားခံ table (course_teacher) ထဲက data ကို sync() သုံးပြီး အသစ်/အဟောင်း ညှိပေးလိုက်ပါတယ်
-        // Checkbox ဘာမှမရွေးထားရင် array အလွတ် [] ပို့ပေးပြီး အကုန် ဖြုတ်ချပေးမှာပါ
+        $teacher->update($incomingFields);
         $teacher->courses()->sync($request->input('course_ids', []));
 
         return redirect('/teacher/index')->with('success', 'Teacher updated successfully');

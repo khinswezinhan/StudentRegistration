@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
 
             $table->string('file');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

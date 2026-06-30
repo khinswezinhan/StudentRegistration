@@ -12,7 +12,8 @@ class StoreCourseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        // 💡 Request ကို ခွင့်ပြုရန်အတွက် true ပြောင်းပေးထားပါတယ်
+        return true; 
     }
 
     /**
@@ -20,14 +21,26 @@ class StoreCourseRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-  public function rules(): array
-{
-    return [
-        'course_name' => 'required|string|max:255',
-        'class_model_id' => 'required|exists:class_models,id',
-        'department_id' => 'required|exists:departments,id',
-        'files' => 'required|array', 
-        'files.*' => 'file|mimes:pdf,doc,docx,zip,png,pptx,xlsx',
-    ];
-}
+    public function rules(): array
+    {
+        // 💡 Route parameter ထဲကလာမယ့် Course ID ကို ဖမ်းယူခြင်း (Update အချိန်မှာပဲ ရှိပါမယ်)
+        $courseId = $this->route('course') ?? $this->route('id');
+
+        return [
+            // 💡 Create အချိန်မှာ unique စစ်ပြီး Update အချိန်မှာတော့ လက်ရှိ Course ID ကို ချွင်းချက်ပေးမယ့် Rule ပါ
+            'course_name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'unique:courses,course_name,' . ($courseId ?? 'NULL') . ',id'
+            ],
+            
+            'class_model_id' => ['required', 'exists:class_models,id'],
+            'department_id' => ['required', 'exists:departments,id'],
+            
+            // 💡 ဖိုင်က unique ဖြစ်စရာမလိုတဲ့အပြင် Create/Update မှာ မတင်ဘဲကျော်လို့ရအောင် nullable ပေးထားပါတယ်
+            'files' => ['nullable', 'array'], 
+            'files.*' => ['file', 'mimes:pdf,doc,docx,zip,png,pptx,xlsx'],
+        ];
+    }
 }

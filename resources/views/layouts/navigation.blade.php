@@ -11,7 +11,7 @@
                     <i class="fa-solid fa-user-graduate me-2"></i> Create Student
                 </a>
 
-                <a href="/user-create" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->is('user-create') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
+                <a href="/teacher-create" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->routeIs('teacher.create') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
                     <i class="fa-solid fa-chalkboard-user me-2"></i> Create Teacher
                 </a>
 
@@ -20,7 +20,7 @@
                 </a>
 
                 @if(auth()->check() && auth()->user()->role_id == 1)
-                    <a href="{{ route('manage_user.create') }}" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->routeIs('manage_user.create') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
+                    <a href="{{ route('user.create') }}" class="d-flex align-items-center text-decoration-none px-3 py-2 rounded text-white fw-medium {{ request()->routeIs('user.create') ? 'bg-white/10' : 'opacity-80 hover:opacity-100' }}" style="transition: all 0.2s;">
                         <i class="fa-solid fa-user-gear me-2"></i> Create User
                     </a>
 
@@ -89,7 +89,7 @@
             </x-responsive-nav-link>
 
             @if(auth()->check() && auth()->user()->role_id == 1)
-                <x-responsive-nav-link :href="route('manage_user.create')" :active="request()->routeIs('manage_user.create')">
+                <x-responsive-nav-link :href="route('user.create')" :active="request()->routeIs('manage_user.create')">
                     {{ __('Create User') }}
                 </x-responsive-nav-link>
 
