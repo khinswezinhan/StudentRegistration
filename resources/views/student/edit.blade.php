@@ -1,6 +1,31 @@
 <x-app-layout>
-    <div class="container mt-5" style="max-width: 500px;">
-        <h2 class="text-center text-primary mb-4">Editing Content</h2>
+    <style>
+        .form-border-custom {
+            border: 1px solid rgb(93, 79, 112) !important;
+            box-shadow: 0 4px 12px rgba(93, 79, 112, 0.05);
+        }
+        
+        .form-theme-label {
+            color: rgb(93, 79, 112) !important;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: rgb(93, 79, 112) !important;
+            box-shadow: 0 0 0 0.25rem rgba(93, 79, 112, 0.25) !important;
+        }
+        .btn-custom-solid {
+            color: #ffffff !important;
+            background-color: rgb(93, 79, 112) !important;
+            border: 1px solid rgb(93, 79, 112) !important;
+            transition: all 0.2s ease;
+        }
+        .btn-custom-solid:hover {
+            background-color: rgb(75, 63, 91) !important;
+            border-color: rgb(75, 63, 91) !important;
+        }
+    </style>
+
+    <div class="container p-5 rounded-4 w-50 m-auto form-border-custom bg-white" style="max-width: 500px;">
+        <h2 class="text-center text-primary mb-4 fs-3">Editing Student</h2>
          
         <form action="{{ route('student.update', $student->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -13,10 +38,20 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Class</label>
-                <input type="text" name="class" class="form-control" value="{{ old('class', $student->class) }}">
-                @error('class') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                <label class="form-label form-theme-label fw-bold">Class</label>
+                <select class="form-select form-control" name="class_model_id" required>
+                    @foreach($classes as $class)
+                        <option value="{{ $class->id }}" {{ old('class_model_id', $student->class_model_id) == $class->id ? 'selected' : '' }}>
+                            {{ $class->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('class_model_id') 
+                    <div class="text-danger small mt-1">{{ $message }}</div> 
+                @enderror
             </div>
+
+            
 
             <div class="mb-3">
                 <label class="form-label">Email</label>

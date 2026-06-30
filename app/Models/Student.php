@@ -9,7 +9,22 @@ class Student extends Model
 {
     use HasFactory;
 
-    protected $table = 'students';
+    protected $fillable = [
+        'name',        
+        'class_model_id', 
+        'email', 
+        'phone', 
+        'address', 
+        'image'
+    ];
 
-    protected $fillable = ['image','name','class','email','phone','address',];
+    public function classModel()
+    {
+        return $this->belongsTo(ClassModel::class, 'class_model_id');
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'course_student');
+    }
 }

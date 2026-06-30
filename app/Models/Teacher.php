@@ -13,10 +13,16 @@ class Teacher extends Model
 
     protected $table = 'teachers';
 
-    protected $fillable = ['image','name','rank','email','phone','address'];
+    protected $fillable = ['name', 'rank', 'department_id', 'course_id', 'email', 'phone', 'address', 'image'];
 
-    public function course(): HasMany
+    public function department()
     {
-        return $this->hasMany(Course::class);
+        return $this->belongsTo(Department::class);
     }
-}
+
+   public function courses()
+    {
+        return $this->belongsToMany(Course::class);
+    }
+    }
+

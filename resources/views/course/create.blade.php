@@ -31,28 +31,68 @@
         <div class="p-5 rounded-4 w-50 m-auto form-border-custom bg-white"> 
             <h2 class="text-center mb-4 form-theme-title fs-3">Create Course</h2>
             
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4">
+                    <ul class="mb-0 small">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
             <form action="{{ route('course.store') }}" method="POST" enctype="multipart/form-data" id="courseForm">
                 @csrf
                 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Course Name</label></b>
-                    <input type="text" name="course_name" class="form-control" placeholder="Distributed System" required>
+                    <input type="text" name="course_name" class="form-control" placeholder="Distributed System" value="{{ old('course_name') }}" required>
+                    
+                    @error('course_name')
+                        <p class="text-danger small mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <div class="mb-4">
-                    <b><label class="form-label form-theme-label">Select Teacher</label></b>
-                    <select class="form-select form-control" name="teacher_id" required>
-                        <option value="" selected disabled>Select Teacher</option>
-                        @foreach($teachers as $teacher)
-                            <option value="{{ $teacher->id }}">{{ $teacher->name }}</option>
+                <div class="mb-3">
+                    <b><label for="class_model_id" class="form-label form-theme-label">Class</label></b>
+                    <select name="class_model_id" id="class_model_id" class="form-select text-secondary" required>
+                        <option value="">-- Select Class --</option>
+                        @foreach($classes as $class)
+                            <option value="{{ $class->id }}" {{ old('class_model_id') == $class->id ? 'selected' : '' }}>
+                                {{ $class->name }}
+                            </option>
                         @endforeach
                     </select>
+
+                    @error('class_model_id')
+                        <p class="text-danger small mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <b><label for="department_id" class="form-label form-theme-label">Department</label></b>
+                    <select name="department_id" id="department_id" class="form-select text-secondary" required>
+                        <option value="">Select Department</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                {{ $dept->department_name }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('department_id')
+                        <p class="text-danger small mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Upload files (Multiple)</label></b>
                     <input type="file" name="files[]" id="fileInput" class="form-control" multiple>
                     
+                    @error('files')
+                        <p class="text-danger small mt-1">{{ $message }}</p>
+                    @enderror
+
                     <div id="selectedFilesContainer" class="d-flex flex-wrap gap-2 mt-3" style="display: none;">
                     </div>
                 </div>
@@ -122,7 +162,6 @@
 
         function removeFileByIndex(indexToRemove) {
             selectedFilesArray.splice(indexToRemove, 1);
-            
             updateFilesUIAndInput();
         }
     </script>

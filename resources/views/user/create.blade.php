@@ -6,7 +6,7 @@
         }
 
         .form-theme-title {
-            color: rgb(93, 79, 112) !important;
+            
             font-weight: 600;
         }
         .form-theme-label {
@@ -33,12 +33,12 @@
     </style>
 
     <div class="py-4"> 
-        <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
             
             <div class="p-5 rounded-4 w-50 m-auto form-border-custom bg-white"> 
                 
-                <h2 class="text-center mb-4 form-theme-title fs-3">Create users' Content</h2>
+                <h2 class="text-center mb-4 form-theme-title text-success fs-3">Create users</h2>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Name</label></b>
@@ -48,11 +48,23 @@
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Email</label></b>
                     <input class="form-control" type="email" name="email" required value="{{ old('email') }}">
+                    @error('email')
+                    <p class="text-danger">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <b><label class="form-label form-theme-label">Password</label></b>
-                    <input class="form-control" type="password" name="password" required>
+                    <input class="form-control" type="password" name="password" 
+                    
+                </div>
+
+                <div class="mb-3">
+                    <b><label class="form-label form-theme-label">Confirm Password</label></b>
+                    <input class="form-control" type="password" name="password_confirmation" >
+                    @error('password')
+                        <p class="text-danger mt-1 small">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4">
@@ -62,12 +74,15 @@
                         @foreach($roles as $role)
                             <option value="{{ $role->id }}">{{ $role->role_name }}</option>
                         @endforeach
+                         @error('role_id')
+                        <p class="text-danger mt-1 small">{{ $message }}</p>
+                    @enderror
                     </select>
                 </div>
 
                 <div class="mb-2">
-                    <button type="submit" class="btn btn-custom-solid form-control fw-medium py-2">
-                        <i class="fa-solid fa-chalkboard-user me-1"></i> Create
+                    <button type="submit" class="btn btn-success form-control fw-medium py-2">
+                        Create
                     </button>
                 </div>    
             </div>

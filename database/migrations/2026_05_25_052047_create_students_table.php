@@ -7,18 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
-        Schema::create('students', function (Blueprint $table) {
-            $table->id();
-            $table->string('image');
-            $table->string('name');
-            $table->string('class');        
-            $table->string('email')->unique(); 
-            $table->string('phone')->nullable(); 
-            $table->text('address')->nullable();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('students', function (Blueprint $table) {
+        $table->id();
+        $table->string('image')->nullable();
+        $table->string('name');
+        
+        $table->foreignId('class_model_id')->constrained('class_models')->onDelete('cascade');
+        
+        $table->string('email')->unique(); 
+        $table->string('phone')->nullable(); 
+        $table->text('address')->nullable();
+        $table->timestamps();
+    });
+}
 
     public function down(): void
     {

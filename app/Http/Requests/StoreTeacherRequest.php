@@ -27,12 +27,12 @@ class StoreTeacherRequest extends FormRequest
         $teacherId = $this->route('teacher') ?? $this->id; 
 
         return [
-            'name' => ['required', 'min:3'],
+            'name' => ['required', 'min:2'],
             'rank' => 'required',
             'email' => [
                 'required',
                 'email',
-                Rule::unique('teachers', 'email')->ignore($teacherId), // 💡 လက်ရှိဆရာ့ email ဆိုရင် ကျော်ပေးမယ်
+                Rule::unique('teachers', 'email')->ignore($teacherId), 
                 Rule::unique('students', 'email')
             ],
             'phone' => [
@@ -44,6 +44,9 @@ class StoreTeacherRequest extends FormRequest
             ],
             'address' => 'required',
             'image' => 'nullable|file|mimes:png,jpg,jpeg|max:5120',
+            'department_id' => 'required|exists:departments,id',
+            'course_ids' => 'nullable|array',
+            'course_ids.*' => 'exists:courses,id',
         ]; 
     }
 }

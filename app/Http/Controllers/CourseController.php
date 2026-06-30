@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCourseRequest;
 use App\Models\Course;
-use App\Models\Teacher; 
+use App\Models\Department;
+use App\Models\ClassModel; // 💡 ➕ ClassModel ကို အသုံးပြုရန် Import ထည့်ပေးထားပါတယ်
 use App\Models\FileModel; 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,61 +15,77 @@ use Illuminate\Support\Facades\File;
 class CourseController extends Controller
 {
     public function index(Request $request) 
-    {
-        $query = Course::with('teacher');
+{
+    // Course ဇယားမှာ ဘယ် Class နဲ့ဆိုင်လဲဆိုတာ မြင်ရအောင် classModel Relation ကို eager load ခေါ်ထားသည်
+    $query = Course::with('classModel');
 
-        if ($request->filled('course_name')) {
-            $query->where('course_name', 'like', '%' . $request->course_name . '%');
-        }
+    // Course Name ကို Space နှင့် Case Ignore လုပ်၍ LIKE ဖြင့် ရှာဖွေခြင်း
+    if ($request->filled('course_name')) {
+        // Request ထဲက လာတဲ့စာသားကို Space အကုန်ဖြုတ်သည်
+        $searchCourseName = str_replace(' ', '', $request->course_name);
 
-        $allContents = $query->paginate(5)->appends($request->all());
-        
-        $data = ['courses' => $allContents];
-        
-        return view('course.index', $data); 
+        $query->whereRaw("REPLACE(course_name, ' ', '') LIKE ?", ['%' . $searchCourseName . '%']);
     }
+
+    $allContents = $query->paginate(5)->appends($request->all());
+    
+    $data = ['courses' => $allContents];
+    
+    return view('course.index', $data); 
+}
 
     public function create()
     {
-        $teachers = Teacher::all(); 
-        return view('course.create', ['teachers' => $teachers]);
+        $classes = ClassModel::all();
+        $departments = Department::all(); 
+
+ 
+        return view('course.create', compact('classes', 'departments'));
     }
 
-    public function store(StoreCourseRequest $request) : RedirectResponse
-    {
-        $incomingFields = $request->validated();
-        
-        $incomingFields['course_name'] = strip_tags($incomingFields['course_name']);
-        $incomingFields['teacher_id'] = strip_tags($incomingFields['teacher_id']);
+   public function store(StoreCourseRequest $request) : RedirectResponse
+{
+    // StoreCourseRequest ထဲကနေ သန့်စင်ပြီးသား ဒေတာတွေကို ယူမယ်
+    $incomingFields = $request->validated();
+    
+    $incomingFields['course_name'] = strip_tags($incomingFields['course_name']);
+    $incomingFields['class_model_id'] = strip_tags($incomingFields['class_model_id']);
+    $incomingFields['department_id'] = strip_tags($incomingFields['department_id']);
 
-        $fileNames = [];
-        
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $pureOriginalName = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-                
-                $filename = time() . '_' . $pureOriginalName;
-                $file->move(public_path('file'), $filename);
-                $filePath = 'file/' . $filename;
+    $fileNames = [];
+    
+    // 🎯 ရွေးလိုက်တဲ့ ဖိုင်တွေ ရှိမရှိ စစ်ပြီး Loop ပတ်မယ်
+    if ($request->hasFile('files')) {
+        foreach ($request->file('files') as $file) {
+            $pureOriginalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            
+            // ဖိုင်နာမည် တူတာတွေ ရှိရင် မထပ်အောင် time() ခံပေးထားတာ ရှယ်ပဲဗျာ
+            $filename = time() . '_' . $pureOriginalName;
+            $file->move(public_path('file'), $filename);
+            $filePath = 'file/' . $filename;
 
-                FileModel::create([
-                    'file_name' => $pureOriginalName, 
-                    'directory' => 'file',
-                    'extension' => $extension,
-                    'file_path' => $filePath, 
-                ]);
+            // FileModel ထဲကို ဒေတာသွင်းခြင်း
+            FileModel::create([
+                'file_name' => $pureOriginalName, 
+                'directory' => 'file',
+                'extension' => $extension,
+                'file_path' => $filePath, 
+            ]);
 
-                $fileNames[] = $filename; 
-            }
+            // Course table ထဲမှာ JSON string အနေနဲ့ သိမ်းဖို့ နာမည်ကို သိမ်းထားမယ်
+            $fileNames[] = $filename; 
         }
-
-        $incomingFields['file'] = $fileNames;
-
-        Course::create($incomingFields);
-        
-        return redirect()->route('course.index')->with('success', 'Course created successfully');
     }
+
+    // $fileNames array ကြီးကို $incomingFields ထဲ ထည့်လိုက်မယ် (Model ထဲမှာ ကာစ်လုပ်ထားပြီးသားမို့ အိုကေတယ်)
+    $incomingFields['file'] = $fileNames;
+
+    // Course ကို ဒေတာဘေ့စ်ထဲ သိမ်းလိုက်ပြီဗျာ
+    Course::create($incomingFields);
+    
+    return redirect()->route('course.index')->with('success', 'Course created successfully');
+}
 
     public function destroy(Course $course) 
     {
@@ -87,16 +104,14 @@ class CourseController extends Controller
         return redirect()->back()->with('success', 'Successfully deleted');
     }
 
-    public function edit($id) 
-    {
-        $course = Course::find($id);
-        $teachers = Teacher::all(); 
-        
-        return view('course.edit', [ 
-            'course' => $course,
-            'teachers' => $teachers
-        ]);
-    }
+   public function edit($id)
+{
+    $course = Course::findOrFail($id);
+    $classes = ClassModel::all();
+    $departments = Department::all();
+
+    return view('course.edit', compact('course', 'classes', 'departments'));
+}
 
     public function update($id, StoreCourseRequest $request) : RedirectResponse
     {
@@ -104,7 +119,10 @@ class CourseController extends Controller
         $incomingFields = $request->validated();
 
         $incomingFields['course_name'] = strip_tags($incomingFields['course_name']);
-        $incomingFields['teacher_id'] = strip_tags($incomingFields['teacher_id']);
+        
+        // 💡 ➕ Update လုပ်တဲ့နေရာမှာလည်း ရွေးချယ်လိုက်တဲ့ class_model_id အသစ်ကို ထည့်ပေးပါတယ်
+        $incomingFields['class_model_id'] = strip_tags($incomingFields['class_model_id']);
+        $incomingFields['department_id'] = strip_tags($incomingFields['department_id']);
 
         $currentFiles = is_array($course->file) ? $course->file : [];
 
@@ -142,7 +160,6 @@ class CourseController extends Controller
 
         $currentFiles = is_array($course->file) ? $course->file : [];
 
-        // ၁။ Storage ထဲက တကယ့် ဖိုင်အစစ်ကို ဖျက်တယ်
         $filePath = public_path('file/' . $fileNameToDelete);
         if (File::exists($filePath)) {
             File::delete($filePath);

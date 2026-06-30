@@ -61,7 +61,7 @@
     <div class="py-4">
         <div class="mt-2 mb-4"> 
             <a href="/course/create" class="text-decoration-none">
-                <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
+                <button type="button" class="btn btn-success fw-medium px-3 py-2">
                     <i class="fa-solid fa-plus me-1"></i> Create New Course
                 </button>
             </a>
@@ -79,7 +79,7 @@
                         <input type="text" name="course_name" class="form-control" placeholder="Search course name..." value="{{ request('course_name') }}">
                     </div>
                     <div class="col-md-3 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-custom-solid w-100 py-2">Filter</button>
+                        <button type="submit" class="btn btn-success w-100 py-2">Search</button>
                         <a href="{{ url()->current() }}" class="btn btn-outline-secondary px-3 py-2">Clear</a>
                     </div>
                 </form>
@@ -90,7 +90,7 @@
                     <i class="fa-solid fa-magnifying-glass-blur"></i>
                 </div>
                 <h4 class="text-danger mb-2">No matching results found</h4>
-                <p class="text-muted small mb-0">သင်ရှာဖွေလိုက်သော သင်တန်းအမည်နှင့် ကိုက်ညီသည့် Course ဒေတာ မရှိပါ။</p>
+                <p class="text-muted small mb-0">Break_သင်ရှာဖွေလိုက်သော သင်တန်းအမည်နှင့် ကိုက်ညီသည့် Course ဒေတာ မရှိပါ။</p>
             </div>
 
         @elseif($courses->isEmpty())
@@ -115,117 +115,106 @@
                         <input type="text" name="course_name" class="form-control" placeholder="Search course name..." value="{{ request('course_name') }}">
                     </div>
                     <div class="col-md-3 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-custom-solid w-100 py-2">Filter</button>
+                        <button type="submit" class="btn btn-success w-100 py-2">Search</button>
                         <a href="{{ url()->current() }}" class="btn btn-outline-secondary px-3 py-2">Clear</a>
                     </div>
                 </form>
             </div>
 
             <div class="table-responsive-custom">
-                <table class="table table-striped-columns table-custom-theme">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Course Name</th>
-                            <th scope="col">Teachers' Name</th>
-                            <th scope="col">Files</th>
-                            <th scope="col" style="width: 160px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($courses as $course)
-                            <tr>
-                                <th scope="row">{{ $course->id }}</th>
-                                <td>{{ $course->course_name }}</td>
-                                <td>{{ $course->teacher ? $course->teacher->name : 'No Teacher' }}</td>
-                                
-                                <td>
-    @if($course->file && (is_array($course->file) || is_object($course->file)) && count((array)$course->file) > 0)
-        <div class="d-flex flex-column gap-1">
-            @foreach((array)$course->file as $singleFile)
-                @php
-                    
-                    $singleFile = is_string($singleFile) ? $singleFile : '';
-                    
-                    if (empty($singleFile)) {
-                        continue; 
-                    }
+    <table class="table table-striped-columns table-custom-theme">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Class</th>
+                <th scope="col">Class</th>
+                <th scope="col">Files</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($courses as $course)
+                <tr>
+                <th scope="row">{{ $courses->firstItem() + $loop->index }}</th>
+                <td>{{ $course->course_name }}</td>
+                
+                <td>
+                    <span class="">
+                        {{ $course->classModel ? $course->classModel->name : 'N/A' }}
+                    </span>
+                </td>
 
+                <td>
+                    <span class="">
+                        {{ $course->department ? $course->department->department_name : 'N/A' }}
+                    </span>
+                </td>
                     
-                    $cleanFileName = Str::after($singleFile, '_');
+                    <td>
+                        @if($course->file && (is_array($course->file) || is_object($course->file)) && count((array)$course->file) > 0)
+                            <div class="d-flex flex-column gap-1">
+                                @foreach((array)$course->file as $singleFile)
+                                    @php
+                                        $singleFile = is_string($singleFile) ? $singleFile : '';
+                                        if (empty($singleFile)) {
+                                            continue; 
+                                        }
+                                        $cleanFileName = Str::after($singleFile, '_');
+                                        $ext = strtolower(pathinfo($singleFile, PATHINFO_EXTENSION));
 
+                                        switch($ext) {
+                                            case 'pdf': $iconClass = 'fa-solid fa-file-pdf text-danger'; break;
+                                            case 'doc':
+                                            case 'docx': $iconClass = 'fa-solid fa-file-word text-primary'; break;
+                                            case 'xls':
+                                            case 'xlsx': $iconClass = 'fa-solid fa-file-excel text-success'; break;
+                                            case 'ppt':
+                                            case 'pptx': $iconClass = 'fa-solid fa-file-powerpoint text-warning'; break;
+                                            case 'txt': $iconClass = 'fa-solid fa-file-lines text-secondary'; break;
+                                            case 'png':
+                                            case 'jpg':
+                                            case 'jpeg':
+                                            case 'gif':
+                                            case 'webp': $iconClass = 'fa-solid fa-file-image text-info'; break;
+                                            case 'zip':
+                                            case 'rar': $iconClass = 'fa-solid fa-file-zipper text-muted'; break;
+                                            default: $iconClass = 'fa-solid fa-file text-muted';
+                                        }
+                                    @endphp
+                                    <a href="{{ asset('file/' . $singleFile) }}" 
+                                       target="_blank" 
+                                       class="btn btn-sm btn-outline-secondary text-start text-truncate"
+                                       style="padding: 4px 8px; font-size: 12px; max-width: 240px;">
+                                         <i class="{{ $iconClass }} me-1"></i> {{ Str::limit($cleanFileName, 20) }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @else
+                            <span class="text-muted" style="font-size: 13px;">No File</span>
+                        @endif
+                    </td>
                     
-                    $ext = strtolower(pathinfo($singleFile, PATHINFO_EXTENSION));
-
-                    
-                    switch($ext) {
-                        case 'pdf':
-                            $iconClass = 'fa-solid fa-file-pdf text-danger';
-                            break;
-                        case 'doc':
-                        case 'docx':
-                            $iconClass = 'fa-solid fa-file-word text-primary';
-                            break;
-                        case 'xls':
-                        case 'xlsx':
-                            $iconClass = 'fa-solid fa-file-excel text-success';
-                            break;
-                        case 'ppt':
-                        case 'pptx':
-                            $iconClass = 'fa-solid fa-file-powerpoint text-warning';
-                            break;
-                        case 'txt':
-                            $iconClass = 'fa-solid fa-file-lines text-secondary';
-                            break;
-                        case 'png':
-                        case 'jpg':
-                        case 'jpeg':
-                        case 'gif':
-                        case 'webp':
-                            $iconClass = 'fa-solid fa-file-image text-info';
-                            break;
-                        case 'zip':
-                        case 'rar':
-                            $iconClass = 'fa-solid fa-file-zipper text-muted';
-                            break;
-                        default:
-                            $iconClass = 'fa-solid fa-file text-muted';
-                    }
-                @endphp
-                <a href="{{ asset('file/' . $singleFile) }}" 
-                   target="_blank" 
-                   class="btn btn-sm btn-outline-secondary text-start text-truncate"
-                   style="padding: 4px 8px; font-size: 12px; max-width: 240px;">
-                     <i class="{{ $iconClass }} me-1"></i> {{ Str::limit($cleanFileName, 20) }}
-                </a>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('course.edit', $course->id) }}">
+                                <i class="fa-solid fa-pen-to-square text-warning"></i> 
+                            </a>
+                            
+                            <form method="post" action="{{ route('course.destroy', $course) }}" onsubmit="return confirm('Are you sure you want to delete?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-link p-0 border-0 m-0">
+                                    <i class="fa-solid fa-trash text-danger"></i> 
+                                </button> 
+                            </form>
+                        </div>
+                    </td>
+                </tr>
             @endforeach
-        </div>
-    @else
-        <span class="text-muted" style="font-size: 13px;">No File</span>
-    @endif
-</td>
-                                
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <a href="{{ route('course.edit', $course->id) }}" class="btn btn-sm btn-primary">
-                                            <i class="fa-solid fa-pen-to-square"></i> Edit
-                                        </a>
-                                        
-                                        <form method="post" action="{{ route('course.destroy', $course) }}" onsubmit="return confirm('Are you sure you want to delete?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="fa-solid fa-trash"></i> Delete
-                                            </button> 
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
+        </tbody>
+    </table>
+</div>
             <div class="mt-4">
                 {{ $courses->links() }}
             </div>

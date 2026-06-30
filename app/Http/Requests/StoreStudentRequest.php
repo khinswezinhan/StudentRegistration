@@ -18,44 +18,44 @@ class StoreStudentRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        // 💡 လက်ရှိ ပြင်ဆင်နေတဲ့ Student ရဲ့ ID ကို လှမ်းယူတာပါ
         $studentId = $this->route('student') ?? $this->id; 
 
         return [
-            // 💡 Create လုပ်ချိန်မှာပဲ ပုံလိုအပ်ပြီး Update လုပ်ချိန်မှာ ပုံမရွေးလည်း ရအောင် nullable ပြောင်းထားပါတယ်
             'image' => $studentId ? 'nullable|file|mimes:png,jpg,jpeg|max:5120' : 'required|file|mimes:png,jpg,jpeg|max:5120',
             
-            // 💡 လက်ရှိကျောင်းသား ID ရဲ့ နာမည်၊ ဖုန်း၊ အီးမေးလ်တွေကို Ignore (ချန်လှပ်) ပေးထားပါတယ်
-            'name' => ['required', Rule::unique('students', 'name')->ignore($studentId)],
-            'class' => 'required',
+            'name' => ['required', 'min:2', Rule::unique('students', 'name')->ignore($studentId)],
+            
+            // 💡 ပြင်ဆင်ချက်: 'class' နေရာမှာ 'class_model_id' လို့ပြောင်းပြီး exists rule ပါ ထည့်ပေးလိုက်ပါတယ်ဟေ့
+            'class_model_id' => 'required|exists:class_models,id',
             
             'email' => [
                 'required',
                 'email',
                 Rule::unique('students', 'email')->ignore($studentId),
-                Rule::unique('teachers', 'email') // ဆရာတွေရဲ့ email နဲ့လည်း သွားမတူရဘူး
+                'unique:teachers,email', 
             ],
             
             'phone' => [
                 'required',
-                'min:11',
-                'max:11',
+                'digits:11', 
                 Rule::unique('students', 'phone')->ignore($studentId),
-                Rule::unique('teachers', 'phone')
+                'unique:teachers,phone', 
             ],
             'address' => 'required',
         ];
     }
 
+    /**
+     * Custom validation messages
+     */
     public function messages(): array
     {
         return [
-            'email.required' => 'we need Actual mail'
+            'email.required' => 'Please fill Actual mail',
+            'class_model_id.required' => 'Please select a class' // 💡 သပ်ရပ်အောင် message အသစ်လေး ထည့်ထားပေးတယ်
         ];
     }
 }

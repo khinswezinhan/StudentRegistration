@@ -6,10 +6,7 @@
             border: 1px solid rgb(93, 79, 112) !important;
             box-shadow: 0 4px 12px rgba(93, 79, 112, 0.05);
         }
-        .form-theme-title {
-            color: rgb(93, 79, 112) !important;
-            font-weight: 600;
-        }
+        
         .form-theme-label {
             color: rgb(93, 79, 112) !important;
         }
@@ -31,7 +28,7 @@
 
     <div class="py-4">
         <div class="p-5 rounded-4 w-50 m-auto form-border-custom bg-white"> 
-            <h2 class="text-center mb-4 form-theme-title fs-3">Editing Content</h2>
+            <h2 class="text-center text-primary mb-4 form-theme-title fs-3">Editing Course</h2>
             
             <form action="{{ route('course.update', $course->id) }}" method="POST" enctype="multipart/form-data" id="editCourseForm">
                 @csrf
@@ -42,15 +39,44 @@
                     <input type="text" name="course_name" class="form-control" value="{{ $course->course_name }}" required>
                 </div>
 
-                <div class="mb-4">
-                    <b><label class="form-label form-theme-label">Teacher Name</label></b>
-                    <select class="form-select form-control" name="teacher_id" required>
-                        @foreach($teachers as $teacher)
-                            <option value="{{ $teacher->id }}" {{ $course->teacher_id == $teacher->id ? 'selected' : '' }}>
-                                {{ $teacher->name }}
+               
+
+
+                <div class="mb-3">
+                    <b><label for="class_model_id" class="form-label form-theme-label">Class</label></b>
+                    
+                    <select name="class_model_id" id="class_model_id" class="form-select text-secondary" required>
+                        <option value="">-- Select Class --</option>
+                        @foreach($classes as $class)
+                            <option value="{{ $class->id }}" 
+                                {{ (old('class_model_id') == $class->id) || ($course->class_model_id == $class->id) ? 'selected' : '' }}>
+                                {{ $class->name }}
                             </option>
                         @endforeach
                     </select>
+
+                    @error('class_model_id')
+                        <p class="text-danger small mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+
+                 <div class="mb-3">
+                    <b><label for="class_model_id" class="form-label form-theme-label">Department</label></b>
+                    
+                    <select name="department_id" id="department_id" class="form-select text-secondary" required>
+                        <option value="">-- Select Class --</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}" 
+                                {{ (old('department_id') == $dept->id) || ($course->department_id == $dept->id) ? 'selected' : '' }}>
+                                {{ $dept->department_name }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('department_id')
+                        <p class="text-danger small mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4">
@@ -82,7 +108,7 @@
                 </div>
 
                 <div class="d-flex gap-2 mt-4">
-                    <button type="submit" class="btn btn-custom-solid fw-medium py-2 flex-grow-1">
+                    <button type="submit" class="btn btn-primary fw-medium py-2 flex-grow-1">
                         <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
                     </button>
                     <a href="{{ route('course.index') }}" class="btn btn-secondary px-4 py-2">Cancel</a>

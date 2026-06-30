@@ -1,10 +1,14 @@
 <x-guest-layout>
     <!-- Session Status -->
+    <div class="flex flex-col items-center justify-center mb-6">
+    <h3 class="text-4xl font-extrabold tracking-wide text-center">
+       User Login
+    </h3>
+</div>
     <x-auth-session-status class="mb-4" :status="session('status')" />
-    
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" >
         @csrf
-
+       
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />

@@ -59,7 +59,7 @@
     <div class="py-4">
         <div class="mt-2 mb-4">
             <a href="{{ route('manage_user.create') }}" class="text-decoration-none">
-                <button type="button" class="btn btn-custom-solid fw-medium px-3 py-2">
+                <button type="button" class="btn btn-success fw-medium px-3 py-2">
                     <i class="fa-solid fa-plus me-1"></i> Create New User
                 </button>
             </a>
@@ -81,7 +81,7 @@
                         <input type="text" name="email" class="form-control" placeholder="Search email..." value="{{ request('email') }}">
                     </div>
                     <div class="col-md-3 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-custom-solid w-100 py-2">Filter</button>
+                        <button type="submit" class="btn btn-success w-100 py-2">Search</button>
                         <a href="{{ url()->current() }}" class="btn btn-outline-secondary px-3 py-2">Clear</a>
                     </div>
                 </form>
@@ -121,7 +121,7 @@
                         <input type="text" name="email" class="form-control" placeholder="Search email..." value="{{ request('email') }}">
                     </div>
                     <div class="col-md-3 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-custom-solid w-100 py-2">Filter</button>
+                        <button type="submit" class="btn btn-success w-100 py-2">Search</button>
                         <a href="{{ url()->current() }}" class="btn btn-outline-secondary px-3 py-2">Clear</a>
                     </div>
                 </form>
@@ -136,13 +136,15 @@
                             <th scope="col">Email</th>
                             <th scope="col" style="width: 200px;">Password</th> {{-- Password ကို ၂၀၀ ပစ်ဇယ်ပဲ ပေးထားမယ် --}}
                             <th scope="col" style="width: 130px;">Role</th>
-                            <th scope="col" style="width: 170px;">Action</th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        
                         @foreach($users as $user)
+                        
                             <tr>
-                                <th scope="row">{{ $user->id }}</th>
+                                <th scope="row">{{ $users->firstItem() + $loop->index }}</th>
                                 <td class="text-truncate">{{ $user->name }}</td>
                                 <td class="text-truncate">{{ $user->email }}</td>
                                 
@@ -154,20 +156,21 @@
                                 
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <a href="{{ route('user.edit', $user->id) }}" class="btn btn-sm btn-primary">
-                                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                                        <a href="{{ route('user.edit', $user->id) }}">
+                                            <i class="fa-solid fa-pen-to-square text-warning"></i>
                                         </a>
                                         
                                         <form method="post" action="{{ route('user.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="fa-solid fa-trash"></i> Delete
+                                            <button type="submit">
+                                                <i class="fa-solid fa-trash text-danger"></i> 
                                             </button> 
                                         </form>
                                     </div>
                                 </td>
                             </tr>
+                            
                         @endforeach
                     </tbody>
                 </table>

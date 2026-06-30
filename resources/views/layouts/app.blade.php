@@ -103,7 +103,7 @@
                         </a>
                         
                         {{-- Teacher List --}}
-                        <a href="{{ route('teacher') }}" class="nav-link-custom {{ request()->routeIs('teacher') ? 'active' : '' }}">
+                        <a href="{{ route('teacher.index') }}" class="nav-link-custom {{ request()->routeIs('teacher.index') ? 'active' : '' }}">
                             <i class="fa-solid fas fa-chalkboard-teacher me-2"></i>
                             <span>Teacher List</span>
                         </a>

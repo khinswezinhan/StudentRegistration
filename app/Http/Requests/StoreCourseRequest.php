@@ -20,13 +20,14 @@ class StoreCourseRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-   public function rules(): array
+  public function rules(): array
 {
     return [
         'course_name' => 'required|string|max:255',
-        'teacher_id' => 'required',
-        'files' => 'nullable|array',      
-        'files.*' => 'file|max:10240',    
+        'class_model_id' => 'required|exists:class_models,id',
+        'department_id' => 'required|exists:departments,id',
+        'files' => 'required|array', 
+        'files.*' => 'file|mimes:pdf,doc,docx,zip,png,pptx,xlsx',
     ];
 }
 }

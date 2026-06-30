@@ -9,19 +9,42 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controllers\HasMiddleware; // 💡 ဒါလေး ထည့်ပါ
+use Illuminate\Routing\Controllers\Middleware;    // 💡 ဒါက Error တက်စေတဲ့ အဓိကတရားခံမို့ ထည့်ပေးရပါမယ်
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware // 💡 implements ထည့်ပေးပါ
 {
-    public function index(Request $request): View 
+    public static function middleware(): array
+    {
+        return [
+            new Middleware(function (Request $request, $next) {
+                if (!Auth::check() || Auth::user()->role_id != 1) {
+                    abort(403, 'Unauthorized. နင်က SuperAdmin မဟုတ်လို့ ဝင်ခွင့်မရှိပါ!');
+                }
+                return $next($request);
+            }),
+        ];
+    }
+
+   public function index(Request $request): View 
 {
     $query = User::with('role');
 
+    // ၁။ Name Filter (Space နှင့် စာလုံးအကြီးအသေးကို Ignore လုပ်မည်)
     if ($request->filled('name')) {
-        $query->where('name', 'like', '%' . $request->name . '%');
+        // Request ထဲက လာတဲ့စာသားကို Space တွေ အကုန်ဖြုတ်လိုက်သည် (ဥပမာ "Mg Mg " -> "MgMg")
+        $searchName = str_replace(' ', '', $request->name);
+
+        $query->whereRaw("REPLACE(name, ' ', '') LIKE ?", ['%' . $searchName . '%']);
     }
 
+    // ၂။ Email Filter (Space နှင့် စာလုံးအကြီးအသေးကို Ignore လုပ်မည်)
     if ($request->filled('email')) {
-        $query->where('email', 'like', '%' . $request->email . '%');
+        // Request ထဲက Email ကို Space တွေ အကုန်ဖြုတ်လိုက်သည်
+        $searchEmail = str_replace(' ', '', $request->email);
+
+        $query->whereRaw("REPLACE(email, ' ', '') LIKE ?", ['%' . $searchEmail . '%']);
     }
 
     $users = $query->paginate(5)->appends($request->all());
@@ -41,7 +64,6 @@ class UserController extends Controller
 
         $incomingFields['name'] = strip_tags($incomingFields['name']);
         $incomingFields['email'] = strip_tags($incomingFields['email']);
-        
         $incomingFields['password'] = bcrypt(strip_tags($incomingFields['password']));
         $incomingFields['role_id'] = strip_tags($incomingFields['role_id']);
 
